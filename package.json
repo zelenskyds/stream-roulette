@@ -1,0 +1,32 @@
+{
+  "name": "roulette",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "homepage": "./",
+  "dependencies": {
+    "antd": "^3.9.3",
+    "classnames": "^2.2.6",
+    "moment": "^2.22.2",
+    "react": "^16.5.2",
+    "react-custom-scrollbars": "^4.2.1",
+    "react-dom": "^16.5.2",
+    "react-horizontal-scrolling-menu": "^0.2.7",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.5",
+    "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1"
+  },
+  "scripts": {
+    "electron": "electron .",
+    "dev-electron": "ELECTRON_START_URL=http://localhost:3000 electron .",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "electron": "^3.0.1"
+  }
+}

@@ -1,0 +1,8 @@
+.settings-controls {
+    flex-shrink: 0;
+    height: 62px;
+    background-color: #313335;
+    padding: 15px;
+    display: flex;
+    flex-direction: row-reverse;
+}

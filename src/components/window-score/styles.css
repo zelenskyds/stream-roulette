@@ -1,0 +1,43 @@
+.window-score {
+    background-color: green;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: EvilDead, sans-serif;
+    color: white;
+    text-shadow: 1px 1px 5px #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16pt;
+}
+
+.window-score-bg {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    position: absolute;
+}
+
+.scoreboard {
+    position: relative;
+    animation: linear colorified 5s infinite;
+}
+
+@keyframes colorified {
+    0% {
+        color: white;
+    }
+
+    20% {
+        color: deeppink;
+    }
+
+    60% {
+        color: coral;
+    }
+
+    80% {
+        color: darkcyan;
+    }
+}

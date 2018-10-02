@@ -1,0 +1,49 @@
+.user-spin-result {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.user-spin-result-title {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.user-spin-result .line {
+    display: flex;
+    border: 1px solid #555555;
+    border-bottom: none;
+}
+
+.user-spin-result .line:last-child {
+    border-bottom: 1px solid #555555;
+}
+
+.user-spin-result .line.header {
+    font-weight: bold;
+    text-align: center;
+}
+
+.user-spin-result .line > div {
+    padding: 5px;
+}
+
+.user-spin-result .line .time {
+    width: 80px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.user-spin-result .line .username {
+    width: 110px;
+    text-align: center;
+    flex-shrink: 0;
+    border: 1px solid #555555;
+    border-top: none;
+    border-bottom: none;
+}
+
+.user-spin-result .line .result {
+    flex-grow: 1;
+    text-align: center;
+}

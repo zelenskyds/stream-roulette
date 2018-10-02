@@ -1,0 +1,48 @@
+.window-settings {
+    width: 100vw;
+    height: 100vh;
+    background-color: #3c3f41;
+    color: #c9c9c9;
+    display: flex;
+    flex-direction: column;
+}
+
+.tabs-container {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.window-settings .ant-tabs {
+    color: #c9c9c9;
+}
+
+.window-settings .ant-tabs-bar {
+    border-color: #555555;
+}
+
+.window-settings  .ant-tabs-nav .ant-tabs-tab {
+    margin: 0;
+}
+
+.window-settings .ant-tabs-small > .ant-tabs-bar .ant-tabs-tab {
+    padding: 8px 10px;
+}
+
+.window-settings .ant-tabs-tab-prev,
+.window-settings .ant-tabs-tab-next {
+    color: #c9c9c9;
+}
+
+.window-settings .ant-input-group-wrapper {
+    color: #c9c9c9;
+}
+
+.window-settings .ant-input-group-addon {
+    background-color: #595b5d;
+    color: #c9c9c9;
+}
+
+.window-settings .ant-checkbox-wrapper,
+.window-settings .ant-select {
+    color: #c9c9c9;
+}

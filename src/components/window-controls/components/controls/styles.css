@@ -1,0 +1,14 @@
+.controls {
+    width: 100%;
+    height: 62px;
+    background-color: #313335;
+    flex-shrink: 0;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+
+.controls > button + button {
+    /*margin-right: 10px;*/
+}

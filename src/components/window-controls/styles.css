@@ -1,0 +1,8 @@
+.app-controls {
+    background-color: #3c3f41;
+    width: 100vw;
+    height: 100vh;
+    color: #c9c9c9;
+    display: flex;
+    flex-direction: column;
+}

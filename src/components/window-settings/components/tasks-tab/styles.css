@@ -1,0 +1,44 @@
+.tasks-tab {
+    height: 455px;
+}
+
+.tasks-tab .tasks-tab-card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-content: space-between;
+}
+
+.tasks-tab .tasks-tab-card-container > * {
+    margin-bottom: 15px !important;
+}
+
+.tasks-tab .tasks-tab-card-container:after {
+    content: "";
+    display: block;
+    width: 45%;
+}
+
+.tasks-tab .ant-card.ant-card-bordered {
+    display: flex;
+    flex-direction: column;
+}
+
+.tasks-tab .ant-card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.task-card-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.tasks-tab .ant-card-body {
+    padding: 10px 5px 5px;
+    text-align: center;
+}

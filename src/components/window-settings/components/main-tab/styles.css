@@ -1,0 +1,28 @@
+.main-tab {
+    height: 455px;
+}
+
+.main-tab-container {
+    padding: 0 10px;
+}
+
+.main-tab-container > * + * {
+    margin-top: 10px;
+}
+
+.main-tab-container > b {
+    display: inline-block;
+}
+
+.main-tab-container > b:not(:first-child) {
+    margin-top: 20px;
+}
+
+.main-tab-line {
+    display: flex;
+    align-items: center;
+}
+
+.main-tab-line-label {
+    flex-shrink: 0;
+}
