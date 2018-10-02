@@ -2,8 +2,8 @@
 
 ### Скачать
 
-* [Сборка Windows]()
-* [Linux]()
+* [Сборка Windows](https://github.com/zelenskyds/steam-roulette/releases/download/v0.1.0/roulette-v0.1.0-windows-x64.zip)
+* [Сборка Linux](https://github.com/zelenskyds/steam-roulette/releases/download/v0.1.0/roulette-v0.1.0-linux-x64.zip)
 
 ### Запуск
 
