@@ -3,13 +3,14 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-family: EvilDead, sans-serif;
+    font-family: Llibrary3AmSoft, sans-serif;
     color: white;
     text-shadow: 1px 1px 5px #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 16pt;
+    font-size: 17pt;
+    font-weight: bold;
 }
 
 .window-score-bg {

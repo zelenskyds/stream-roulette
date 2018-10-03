@@ -69,7 +69,7 @@ class WindowScore extends Component {
                             <span>о</span>
                             <span>с</span>
                             <span>ь</span>
-                            <span>&nbsp;</span>
+                            <span> &nbsp;</span>
                             <span>{this.state.amount}</span>
                             <b>₽</b>
                         </Fragment>

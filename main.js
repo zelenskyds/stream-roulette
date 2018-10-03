@@ -5,8 +5,19 @@ const fs = require('fs');
 
 app.commandLine.appendSwitch('--autoplay-policy','no-user-gesture-required');
 
-function createWindow(name, size, openDev=false) {
-    const window = new BrowserWindow({ ...size, resizable: false });
+function createWindow(name, opt, openDev=false) {
+    const window = new BrowserWindow({
+        ...opt,
+        resizable: false,
+        backgroundColor: '#3c3f41',
+        icon: path.join(
+            __dirname,
+            process.env.ELECTRON_START_URL?
+                'public/twitch_roulette128x128.png'
+                :
+                'build/twitch_roulette128x128.png'
+        )
+    });
     window.setMenu(null);
 
     const startUrl = process.env.ELECTRON_START_URL || url.format({

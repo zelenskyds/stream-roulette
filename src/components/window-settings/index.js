@@ -18,6 +18,7 @@ class WindowSettings extends Component {
 
         this.state = {
             donationToken: localStorage.getItem("donationToken"),
+            donatePayToken: localStorage.getItem("donatePayToken"),
             bgPath: localStorage.getItem("bgPath"),
             bgScorePath: localStorage.getItem("bgScorePath"),
             framePath: localStorage.getItem("framePath"),
@@ -46,6 +47,7 @@ class WindowSettings extends Component {
 
     handleSave = () => {
         localStorage.setItem("donationToken", this.state.donationToken);
+        localStorage.setItem("donatePayToken", this.state.donatePayToken);
         localStorage.setItem("bgPath", this.state.bgPath);
         localStorage.setItem("bgScorePath", this.state.bgScorePath);
         localStorage.setItem("framePath", this.state.framePath);
@@ -191,6 +193,13 @@ class WindowSettings extends Component {
         }
     };
 
+    handleDonatePayTokenChange = ({ target: { value } }) => {
+        this.setState({
+            donatePayToken: value,
+            settingChanged: true
+        })
+    };
+
     render() {
         return (
             <div className="window-settings">
@@ -217,6 +226,8 @@ class WindowSettings extends Component {
                                 discountChance={ this.state.discountChance }
                                 rouletteWindowWidth={ this.state.rouletteWindowWidth }
                                 onRouletteWindowWidthChange={ this.handleRouletteWindowWidthChange }
+                                donatePayToken={ this.state.donatePayToken }
+                                onDonatePayTokenChange={ this.handleDonatePayTokenChange }
                             />
                         </TabPane>
                         <TabPane tab="Вид" key="preferences">

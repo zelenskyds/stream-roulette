@@ -8,7 +8,22 @@
     font-family: EvilDead;
 }
 
+@font-face {
+    src: url("./fonts/AR DARLING.ttf");
+    font-family: ArDarling;
+}
+
+@font-face {
+    src: url("./fonts/LIBRARY 3 AM soft.otf");
+    font-family: Llibrary3AmSoft;
+}
+
+html {
+    background-color: #3c3f41;
+}
+
 body {
+    background-color: #3c3f41;
     margin: 0;
     padding: 0;
     font-family: sans-serif;

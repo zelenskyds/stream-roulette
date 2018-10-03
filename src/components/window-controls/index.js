@@ -5,6 +5,7 @@ import './styles.css';
 import UserSpinResults from "./components/user-spin-results";
 import Controls from "./components/controls";
 import random from "../../services/random";
+import DonatePay from "../../services/donatepay-api";
 
 const { ipcRenderer } = window.require('electron');
 
@@ -31,7 +32,7 @@ class WindowControls extends Component {
     constructor(...args) {
         super(...args);
 
-        this.initSocket();
+        this.initDonationSystems();
         this.initSettings();
     }
 
@@ -41,6 +42,7 @@ class WindowControls extends Component {
         }
 
         localStorage.setItem("donationToken", "");
+        localStorage.setItem("donatePayToken", "");
         localStorage.setItem("bgPath", "");
         localStorage.setItem("bgScorePath", "");
         localStorage.setItem("framePath", "");
@@ -83,7 +85,11 @@ class WindowControls extends Component {
 
         ipcRenderer.on('settings-changed', (event, message) => {
             if(message.donationToken) {
-                this.initSocket(message.donationToken);
+                this.initDonationAlert(message.donationToken);
+            }
+
+            if(message.donatePayToken) {
+                this.initDonatePay(message.donatePayToken);
             }
 
             if(message.amountFunction) {
@@ -150,7 +156,39 @@ class WindowControls extends Component {
         }
     }
 
-    initSocket(token) {
+    handleDonate = async (message) => {
+        if(!this.state.isRouletteShow) {
+            return;
+        }
+
+        if( this.isDiscount ) {
+            const mod = (this.amountForSpin - this.amount) / 2 - this.discountSumEarned;
+            if( message.amount < mod ) {
+                this.discountSumEarned += message.amount;
+                ipcRenderer.send("donate", { amount: (this.amountForSpin - this.amount) / 2 - this.discountSumEarned, discount: true });
+                return;
+            } else {
+                this.amount += this.discountSumEarned;
+                this.discountSumEarned = 0;
+            }
+        } else if( (this.amount + message.amount) < this.amountForSpin  ) {
+            this.amount += message.amount;
+            ipcRenderer.send("donate", { amount: this.amountForSpin - this.amount, discount: false });
+            return;
+        }
+
+        this.amount = 0;
+        this.amountForSpin = this.calculateNewAmountForSpin();
+        ipcRenderer.send("donate", { amount: this.amountForSpin, discount: false });
+
+        if(this.spinning) {
+            await this.spinning;
+        }
+
+        this.spinRoulette(message);
+    };
+
+    initDonationAlert(token) {
         token = token || localStorage.getItem("donationToken");
 
         if(!token) {
@@ -164,34 +202,29 @@ class WindowControls extends Component {
         this.socket = io("socket.donationalerts.ru:3001");
         this.socket.emit('add-user', {token, type: "minor"}); //SOopGRRQeEKk1F4pYH8x
         this.socket.on('donation', async (json) => {
-            const message = JSON.parse(json);
-
-            if( this.isDiscount ) {
-                const mod = (this.amountForSpin - this.amount) / 2 - this.discountSumEarned;
-                if( message.amount < mod ) {
-                    this.discountSumEarned += message.amount;
-                    ipcRenderer.send("donate", { amount: (this.amountForSpin - this.amount) / 2 - this.discountSumEarned, discount: true });
-                    return;
-                } else {
-                    this.amount += this.discountSumEarned;
-                    this.discountSumEarned = 0;
-                }
-            } else if( (this.amount + message.amount) < this.amountForSpin  ) {
-                this.amount += message.amount;
-                ipcRenderer.send("donate", { amount: this.amountForSpin - this.amount, discount: false });
-                return;
-            }
-
-            this.amount = 0;
-            this.amountForSpin = this.calculateNewAmountForSpin();
-            ipcRenderer.send("donate", { amount: this.amountForSpin, discount: false });
-
-            if(this.spinning) {
-                await this.spinning;
-            }
-
-            this.spinRoulette(message);
+            await this.handleDonate(JSON.parse(json));
         });
+    }
+
+    initDonatePay(token) {
+        token = token || localStorage.getItem("donatePayToken");
+
+        if(!token) {
+            return
+        }
+
+        if(this.donatePay) {
+            this.donatePay.clear();
+        }
+
+        this.donatePay = new DonatePay(token);
+
+        this.donatePay.onDonate( this.handleDonate );
+    }
+
+    initDonationSystems() {
+        this.initDonationAlert();
+        this.initDonatePay();
     }
 
     spinRoulette = (message) => {

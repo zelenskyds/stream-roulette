@@ -29,6 +29,13 @@ class MainTab extends Component {
                             placeholder="Токен"
                             type="password"
                         />
+                        <Input
+                            value={ this.props.donatePayToken }
+                            onChange={ this.props.onDonatePayTokenChange }
+                            addonBefore="Donate Pay"
+                            placeholder="Токен"
+                            type="password"
+                        />
 
                         <b>Шансы выпадения</b>
                         <div>

@@ -22,7 +22,8 @@
 .variant span {
     padding: 7px;
     line-height: 1.8;
-    font-size: 12pt;
+    font-size: 14pt;
+    font-weight: bold;
     text-align: center;
     position: relative;
 }

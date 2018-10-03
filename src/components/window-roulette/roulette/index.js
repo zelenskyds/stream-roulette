@@ -137,6 +137,10 @@ class Roulette extends Component {
             setTimeout(
                 async () => {
                     await this.setState({ showing: false });
+                    setTimeout(
+                        () => this.container.scroll(0, 0),
+                        702
+                    );
                     resolve(variant);
                 },
                 (this.props.showingTime || 5) * 1000
