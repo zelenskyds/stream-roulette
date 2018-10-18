@@ -199,8 +199,8 @@ class WindowControls extends Component {
             this.socket.disconnect();
         }
 
-        this.socket = io("socket.donationalerts.ru:3001");
-        this.socket.emit('add-user', {token, type: "minor"}); //SOopGRRQeEKk1F4pYH8x
+        this.socket = io("http://socket.donationalerts.ru:3001");
+        this.socket.emit('add-user', {token, type: "minor"});
         this.socket.on('donation', async (json) => {
             await this.handleDonate(JSON.parse(json));
         });
