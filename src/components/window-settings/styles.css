@@ -5,11 +5,31 @@
     color: #c9c9c9;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .tabs-container {
-    padding: 15px;
+    padding-right: 10px;
     flex-grow: 1;
+    overflow: hidden;
+}
+
+.tabs-container .ant-tabs-bar {
+    background-color: #313335;
+    height: 497px;
+    border: #555555 1px solid;
+}
+
+.tabs-container .ant-tabs-tab {
+    text-align: left !important;
+}
+
+.ant-tabs-tab:first-child {
+    padding-top: 15px !important;
+}
+
+.ant-tabs-content.ant-tabs-content-animated {
+    border: none !important;
 }
 
 .window-settings .ant-tabs {
@@ -17,7 +37,8 @@
 }
 
 .window-settings .ant-tabs-bar {
-    border-color: #555555;
+    /*border-color: #555555;*/
+    border: none !important;
 }
 
 .window-settings  .ant-tabs-nav .ant-tabs-tab {

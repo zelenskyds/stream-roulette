@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Button } from 'antd';
+import cn from 'classnames';
 import './styles.css';
 
 class SettingsControls extends Component {
     render() {
         return (
-            <div className="settings-controls">
+            <div className={cn("settings-controls", { "show": this.props.show })}>
                 <Button
                     htmlType="button"
                     type="primary"

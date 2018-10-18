@@ -39,11 +39,11 @@ class UserSpinResults extends Component {
                         </div>
                         {
                             results.map(
-                                userInfo => (
-                                    <div key={+userInfo.time} className="line">
-                                        <div className="time">{ moment(userInfo.time).fromNow() }</div>
-                                        <div className="username">{ userInfo.username }</div>
-                                        <div className="result">{ userInfo.spinResult }</div>
+                                result => (
+                                    <div key={+result.time} className="line">
+                                        <div className="time">{ moment(result.time).fromNow() }</div>
+                                        <div className="username">{ result.username }</div>
+                                        <div className="result">{ result.text }</div>
                                     </div>
                                 )
                             )

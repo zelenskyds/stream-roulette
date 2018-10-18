@@ -1,0 +1,57 @@
+.arrow {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    position: relative;
+}
+
+.arrow.horizontal {
+    border-top: 2px solid red;
+}
+
+.arrow.vertical {
+    border-left: 2px solid red;
+}
+
+.arrow.vertical:before,
+.arrow.vertical:after,
+.arrow.horizontal:before,
+.arrow.horizontal:after {
+    border-top: 2px solid red;
+    border-right: 2px solid red;
+    width: 10px;
+    height: 10px;
+    content: "";
+    display: block;
+    position: absolute;
+}
+
+.arrow.vertical:before ,
+.arrow.vertical:after {
+    left: -6px;
+}
+
+.arrow.vertical:before {
+    top: 0;
+    transform: rotate(-45deg);
+}
+
+.arrow.vertical:after {
+    bottom: 0;
+    transform: rotate(135deg);
+}
+
+.arrow.horizontal:before,
+.arrow.horizontal:after {
+    top: -6px;
+}
+
+.arrow.horizontal:before {
+    left: 0;
+    transform: rotate(-135deg);
+}
+
+.arrow.horizontal:after {
+    right: 0;
+    transform: rotate(45deg);
+}

@@ -2,10 +2,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 150px;
-    height: 150px;
+    /*width: 150px;*/
+    /*height: 150px;*/
     flex-shrink: 0;
-    margin: 10px;
+    margin: 0 10px;
     position: relative;
     overflow: hidden;
     color: white;

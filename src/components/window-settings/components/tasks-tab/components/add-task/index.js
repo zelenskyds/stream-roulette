@@ -36,6 +36,7 @@ class AddTask extends Component {
     handleSave = () => {
         this.handleCancel();
         this.props.onSave({
+            id: Date.now(),
             rarity: this.state.rarity,
             text: this.state.text
         });
@@ -52,7 +53,7 @@ class AddTask extends Component {
             return (
                 <Card
                     style={{
-                        width: '45%',
+                        width: '30%',
                         height: 165
                     }}
                     actions={[
@@ -71,7 +72,7 @@ class AddTask extends Component {
                             trigger={['click']}
                             overlay={
                                 <RarityMenu
-                                    choosen={"bronze"}
+                                    choosen={["bronze"]}
                                     onChange={ this.handleChangeRarity }
                                 />
                             }
@@ -86,7 +87,7 @@ class AddTask extends Component {
         return (
             <Button
                 style={{
-                    width: "45%",
+                    width: "30%",
                     height: 165
                 }}
                 htmlType="button"

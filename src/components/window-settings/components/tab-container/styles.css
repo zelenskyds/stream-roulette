@@ -1,0 +1,15 @@
+.tab-container {
+    height: 498px;
+}
+
+.tab-container-inner {
+    padding: 15px 10px;
+}
+
+.tab-container .group > * + * {
+    margin-top: 10px;
+}
+
+.tab-container .group + .group {
+    margin-top: 25px;
+}

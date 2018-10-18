@@ -1,0 +1,80 @@
+.image-picker {
+    width: 25px;
+    height: 25px;
+    flex-grow: 0;
+    position: relative;
+}
+
+.image-picker-preview {
+    object-fit: fill;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.image-picker-overlay {
+    position: fixed;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+}
+
+.image-picker-popup {
+    width: 170px;
+    height: 170px;
+    overflow: hidden;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    z-index: 1001;
+    border-radius: 6px;
+    background-color: #fff;
+    transform-origin: top;
+    animation: 0.2s linear popup-enter;
+    box-shadow: 0 0 5px #000;
+}
+
+.image-picker-popup-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    align-content: flex-start;
+    padding: 5px;
+}
+
+.image-picker-popup-inner:before,
+.image-picker-popup-inner:after {
+    order: 1000;
+    width: 50px;
+    display: block;
+    content: "";
+}
+
+.image-picker-img {
+    flex-shrink: 1;
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: none;
+    border-radius: 5px;
+    overflow: hidden;
+    outline: none;
+    box-shadow: none;
+    margin-bottom: 5px;
+    cursor: pointer;
+    font-size: 35px;
+    line-height: 1;
+    color: red;
+}
+
+.image-picker-img img {
+    width: 100%;
+    height: 100%;
+}

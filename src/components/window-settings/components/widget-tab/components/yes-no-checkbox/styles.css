@@ -1,0 +1,64 @@
+.yes-no-checkbox {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.yes-no-checkbox:hover .yes-no-checkbox-box {
+    border-color: #1890ff;
+}
+
+.yes-no-checkbox-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    margin-right: 10px;
+    transition: background-color .3s, border-color .3s;
+    position: relative;
+}
+
+.yes-no-checkbox-box:before,
+.yes-no-checkbox-box:after {
+    content: "";
+    position: absolute;
+    display: block;
+    background-color: transparent;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: auto;
+}
+
+.yes-no-checkbox-box.state-true,
+.yes-no-checkbox-box.state-false {
+    background-color: #1890ff;
+    border-color: #1890ff;
+}
+
+.yes-no-checkbox-box.state-true:before {
+    width: 7px;
+    height: 10px;
+    border: #fff solid;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+.yes-no-checkbox-box.state-false:before,
+.yes-no-checkbox-box.state-false:after {
+    width: 0;
+    height: 12px;
+    border: #fff solid;
+    border-width: 0 3px 0 0;
+    bottom: 0;
+}
+
+.yes-no-checkbox-box.state-false:before {
+    transform: rotate(45deg);
+}
+
+.yes-no-checkbox-box.state-false:after {
+    transform: rotate(-45deg);
+}

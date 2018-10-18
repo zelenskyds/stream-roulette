@@ -1,0 +1,22 @@
+.widget-settings {
+    border: 1px solid #c9c9c9;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.widget-settings-line {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.widget-settings-layers-picker {
+    background-color: transparent;
+    color: #c9c9c9;
+}
+
+.widget-settings-title {
+    /*font-size: 1.2em;*/
+    font-weight: bold;
+    margin: 10px 0;
+}

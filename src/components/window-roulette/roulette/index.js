@@ -3,22 +3,21 @@ import Variant from './variant/index';
 import cn from 'classnames';
 import random from '../../../services/random';
 import './styles.css';
+import render from '../../../services/render-dot';
 
 class Roulette extends Component {
     state = {
         showing: false,
-        bgError: false,
-        frameError: false
+        offsetWidth: 0,
+        startScroll: 0
     };
 
     container = null;
     lastResult = null;
-    cardWidth = 170;
-    rouletteWindowWidth = +localStorage.getItem("rouletteWindowWidth");
-    rouletteWidth = this.rouletteWindowWidth - 80;
-    offsetInCards = 42;
-    offsetInPx = this.offsetInCards * this.cardWidth;
     audio = null;
+
+    cardMargin = 10;
+    offsetInCards = 42;
 
     async scrollToLeft(px, pxPerMs=5) {
         return new Promise((resolve) => {
@@ -47,7 +46,6 @@ class Roulette extends Component {
         return new Promise((resolve)=> {
             setTimeout(
                 async () => {
-                    this.container.scroll(0, 0);
                     const rarityChance = random(0, 10000);
                     const normalizedGoldChance = (this.props.goldChance || 1) * 100;
                     const normalizedSilverChance = ( this.props.silverChance || 10 ) * 100 + normalizedGoldChance;
@@ -70,6 +68,7 @@ class Roulette extends Component {
                         rarity = "bronze";
                     } else {
                         resolve("No variants!");
+                        return;
                     }
 
                     let variants;
@@ -93,26 +92,30 @@ class Roulette extends Component {
                         this.lastResult = variantRealIndex;
                     }
 
-                    const fakeOffset = random(5, this.cardWidth - 5);
+                    const cardWidth = this.props.cardWidth + this.cardMargin*2;
+                    const offsetInPx = cardWidth * this.offsetInCards + this.state.offsetWidth - this.state.startScroll;
+                    const fakeOffset = random(5, cardWidth - 5);
 
-                    const offsetToSpin = this.offsetInPx + this.cardWidth * variantRealIndex - this.rouletteWidth / 2 + fakeOffset;
+                    const offsetToSpin =
+                        offsetInPx + cardWidth * variantRealIndex - this.props.width / 2 + fakeOffset;
 
+                    // await this.scrollToLeft( offsetToSpin, 5 );
                     await this.scrollToLeft( offsetToSpin - 2000, 5 );
                     await this.scrollToLeft( 800, 4 );
                     await this.scrollToLeft( 600, 3 );
                     await this.scrollToLeft( 400, 2 );
                     await this.scrollToLeft( 200, 1 );
 
-                    if(fakeOffset > this.cardWidth / 2) {
+                    if(fakeOffset > cardWidth / 2) {
                         setTimeout(
                             async () => {
-                                await this.scrollToLeft( this.cardWidth / 2 - fakeOffset, 1 );
+                                await this.scrollToLeft( cardWidth / 2 - fakeOffset, 1 );
                                 resolve(variants[variantIndex]);
                             },
                             500
                         )
                     } else {
-                        await this.scrollToLeft( this.cardWidth / 2 - fakeOffset, 1 );
+                        await this.scrollToLeft( cardWidth / 2 - fakeOffset, 1 );
                         resolve(variants[variantIndex]);
                     }
 
@@ -122,8 +125,12 @@ class Roulette extends Component {
         });
     };
 
-    spin = async () => {
-        await this.setState({ showing: true });
+    spin = async (message) => {
+
+        await this.setState({
+            showing: true,
+            donate: message
+        });
 
         this.audio && this.audio.play();
         const variant = await this._spin();
@@ -138,46 +145,39 @@ class Roulette extends Component {
                 async () => {
                     await this.setState({ showing: false });
                     setTimeout(
-                        () => this.container.scroll(0, 0),
+                        () => this.container.scroll(this.state.startScroll, 0),
                         702
                     );
-                    resolve(variant);
+                    resolve({
+                        ...variant,
+                        text: render(
+                            variant.text,
+                            {
+                                donate: this.state.donate
+                            }
+                        ),
+                    });
                 },
                 (this.props.showingTime || 5) * 1000
             )
         });
     };
 
-    clearError() {
-        this.setState({
-            frameError: false,
-            bgError: false
-        });
-    }
-
     componentDidMount() {
-        this.props.getSpin && this.props.getSpin(() => this.spin());
-        this.props.getClearError && this.props.getClearError(() => this.clearError());
+        this.props.getSpin && this.props.getSpin( this.spin );
     }
-
-    handleBgError = () => {
-        this.setState({
-            bgError: true
-        });
-    };
-
-    handleFrameError = () => {
-        this.setState({
-            frameError: true
-        });
-    };
 
     renderVariants() {
         if(this.props.variants.length === 0) {
             return [
-                <Variant key={ 0 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["bronze"] }/>,
-                <Variant key={ 1 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["silver"] }/>,
-                <Variant key={ 2 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["gold"] }/>,
+                <Variant
+                    key={ 0 }
+                    width={ this.props.cardWidth }
+                    height={ this.props.cardHeight }
+                    text={ "Добавте задания в настройках" }
+                    bgImage={ this.props.bronzePath }
+                    bgColor={ this.props.colorBronze }
+                />,
             ]
         }
 
@@ -190,37 +190,123 @@ class Roulette extends Component {
 
         const variants = [...preVariants, ...this.props.variants, ...this.props.variants.slice(0, 2)];
         return variants.map(
-            (variant, index) => <Variant key={ index } text={ variant.text } bgPath={ this.props.bgPaths[variant.rarity] }/>
+            (variant, index) => (
+                <Variant
+                    width={ this.props.cardWidth }
+                    height={ this.props.cardHeight }
+                    key={ index }
+                    bgColor={ this.props['color' + variant.rarity.toUpperCase()[0] + variant.rarity.slice(1)] }
+                    text={
+                        render(
+                            variant.text,
+                            {
+                                donate: this.state.donate
+                            }
+                        )
+                    }
+                    bgImage={ this.props[variant.rarity + 'Image'] }
+                />
+            )
         )
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props.cardWidth !== prevProps.cardWidth || this.props.width !== prevProps.width) {
+            this.onResize();
+        }
+    }
+
+    onResize = () => {
+        if(!this.container) {
+            return
+        }
+
+        const twoCardWidth = (this.props.cardWidth + this.cardMargin*2) * 2;
+        const offsetForFirstCard = (this.props.width - this.props.cardWidth - this.cardMargin*2) / 2;
+        if(twoCardWidth > offsetForFirstCard) {
+            const startScroll = twoCardWidth - offsetForFirstCard;
+            this.container.scroll(startScroll, 0);
+            this.setState({
+                offsetWidth: 0,
+                startScroll
+            })
+        } else {
+            this.container.scroll(0, 0);
+            this.setState({
+                offsetWidth: offsetForFirstCard - twoCardWidth,
+                startScroll: 0
+            })
+        }
+    };
+
+    containerRef = (div) => {
+        this.container = div;
+        this.onResize();
+    };
 
     render() {
         return (
             <div className="frame">
-                {this.props.soundPath &&
-                    <audio loop ref={ a => this.audio = a } src={this.props.soundPath}/>
+                <div
+                    style={{
+                        backgroundColor: this.props.color,
+                        borderColor: this.props.color,
+                    }}
+                    className="bg-color"
+                />
+                {this.props.spinSound &&
+                    <audio
+                        loop
+                        ref={ a => this.audio = a }
+                        src={ 'file://' + this.props.spinSound.path }
+                    />
                 }
                 <div
                     style={{
-                        width: this.rouletteWidth
+                        width: this.props.width,
+                        height: this.props.height,
+                        paddingTop: this.props.paddingTop,
+                        paddingRight: this.props.paddingRight,
+                        paddingBottom: this.props.paddingBottom,
+                        paddingLeft: this.props.paddingLeft,
                     }}
                     className={cn("roulette", { 'show': this.state.showing })}
                 >
-                    {!this.state.bgError &&
-                        <img onError={this.handleBgError}
-                             className="background-image"
-                             src={ this.props.bgPaths['bg'] }
+                    {this.props.bgImage &&
+                        <img className="background-image"
+                             src={ 'file://' + this.props.bgImage.path }
                              alt="bg"
                         />
                     }
-                    <div ref={ div => this.container = div } className="container">
+                    <div
+                        ref={ this.containerRef }
+                        className="container"
+                        style={{
+                            paddingTop: (this.props.height - this.props.cardHeight) / 2
+                        }}
+                    >
+                        <div
+                            className="roulette-offset"
+                            style={{
+                                width: this.state.offsetWidth
+                            }}
+                        />
                         { this.renderVariants() }
                     </div>
-                    {!this.state.frameError &&
+                    <div
+                        className="roulette-pointer"
+                        style={{
+                            width: this.props.cardWidth,
+                            height: this.props.cardHeight,
+                            left: this.props.paddingLeft + (this.props.width - this.props.cardWidth) / 2,
+                            top: this.props.paddingTop + (this.props.height - this.props.cardHeight) / 2,
+                            // top: `calc(50% - ${this.props.cardHeight / 2}px)`
+                        }}
+                    />
+                    {this.props.frameImage &&
                         <img
-                            onError={this.handleFrameError}
                             className="frame-image"
-                            src={ this.props.bgPaths['frame'] }
+                            src={ 'file://' + this.props.frameImage.path }
                             alt="frame"
                         />
                     }
