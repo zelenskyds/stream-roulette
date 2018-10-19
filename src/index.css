@@ -27,4 +27,17 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
+    user-select: none;
+}
+
+@keyframes popup-enter {
+    0% {
+        transform: scaleY(.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
 }

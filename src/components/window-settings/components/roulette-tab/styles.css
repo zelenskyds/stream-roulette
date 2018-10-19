@@ -1,0 +1,163 @@
+.roulette-tab {
+    overflow: visible;
+    width: 100%;
+}
+
+.roulette-tab > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-around;
+}
+
+.roulette-tab > div + div {
+    margin-top: 10px;
+}
+
+.roulette-tab-window-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.roulette-tab-window {
+    flex-grow: 0 !important;
+    width: 95%;
+    height: 250px;
+    border: 2px red solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.roulette-tab-control {
+    position: absolute;
+    display: flex;
+    align-items: center;
+}
+
+.roulette-tab-control.color {
+    right: 10px;
+    top: 10px;
+}
+
+.roulette-tab-control.bg {
+    left: 10px;
+    top: 10px;
+}
+
+.roulette-tab-control.frame {
+    left: 10px;
+    bottom: 10px;
+}
+
+.roulette-tab-arrow {
+    position: absolute;
+    text-align: center;
+}
+
+.roulette-tab-arrow .ant-input-number {
+    width: 70%;
+}
+
+.roulette-tab-arrow.padding-bottom .ant-input-number,
+.roulette-tab-arrow.padding-top .ant-input-number {
+    margin-left: 15px;
+}
+
+.roulette-tab-arrow.padding-left {
+    left: 2px;
+    width: 83px;
+}
+
+.roulette-tab-arrow.padding-top {
+    top: 2px;
+    height: 45px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.roulette-tab-arrow.padding-right {
+    right: 2px;
+    width: 83px;
+}
+
+.roulette-tab-arrow.padding-bottom {
+    bottom: 2px;
+    height: 45px;
+    width: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.roulette-tab-inner {
+    height: 150px;
+    width: 70%;
+    border: 2px solid red;
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+.roulette-tab-card {
+    margin-top: 35px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid red;
+    position: relative;
+}
+
+.roulette-tab-arrow.card-width {
+    position: absolute;
+    width: 92px;
+    top: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.roulette-tab-arrow.card-height {
+    margin-top: 2px;
+    margin-left: 5px;
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.roulette-tab-control.card-bg {
+    display: block;
+    left: 10px;
+}
+
+.roulette-tab-control.card-color > div,
+.roulette-tab-control.card-bg > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.roulette-tab-control.card-color {
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.roulette-tab-control .image-picker {
+    display: inline-block;
+}
+
+div.roulette-tab-sound {
+    display: flex;
+    justify-content: start;
+}
+
+.roulette-tab-sound-select {
+    width: 150px;
+}

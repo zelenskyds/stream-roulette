@@ -1,0 +1,9 @@
+.sound-tab-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.sound-tab-container audio {
+    margin-top: 5px;
+}

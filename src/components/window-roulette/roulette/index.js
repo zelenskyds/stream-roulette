@@ -1,183 +1,181 @@
 import React, { Component } from 'react';
 import Variant from './variant/index';
-import cn from 'classnames';
 import random from '../../../services/random';
+import render from '../../../services/render-dot';
 import './styles.css';
 
 class Roulette extends Component {
     state = {
         showing: false,
-        bgError: false,
-        frameError: false
+        startScroll: 0,
+        duration: 0
     };
 
-    container = null;
     lastResult = null;
-    cardWidth = 170;
-    rouletteWindowWidth = +localStorage.getItem("rouletteWindowWidth");
-    rouletteWidth = this.rouletteWindowWidth - 80;
+
+    cardMargin = 10;
     offsetInCards = 42;
-    offsetInPx = this.offsetInCards * this.cardWidth;
-    audio = null;
 
-    async scrollToLeft(px, pxPerMs=5) {
-        return new Promise((resolve) => {
-            let direction = 1;
+    async _spin() {
+        const goldTasks = this.props.variants.filter( v => v.rarity === "gold" );
+        const silverTasks = this.props.variants.filter( v => v.rarity === "silver" );
+        const bronzeTasks = this.props.variants.filter( v => v.rarity === "bronze" );
 
-            if(px < 0) {
-                direction = -1;
-            }
-
-            let x = 0;
-            const r = setInterval(() => {
-                if(Math.abs(x + direction * pxPerMs) > Math.abs(px)) {
-                    this.container.scrollBy({left: px - x});
-                    clearInterval(r);
-                    resolve(this.container.scrollLeft);
-                } else {
-                    this.container.scrollBy({left: direction * pxPerMs});
-                }
-
-                x = (x + direction * pxPerMs);
-            }, 1);
-        });
-    }
-
-    _spin = async () => {
-        return new Promise((resolve)=> {
-            setTimeout(
-                async () => {
-                    this.container.scroll(0, 0);
-                    const rarityChance = random(0, 10000);
-                    const normalizedGoldChance = (this.props.goldChance || 1) * 100;
-                    const normalizedSilverChance = ( this.props.silverChance || 10 ) * 100 + normalizedGoldChance;
-
-                    let rarity;
-
-                    const haveGold = this.props.variants.filter( v => v.rarity === "gold" ).length !== 0;
-                    const haveSilver = this.props.variants.filter( v => v.rarity === "silver" ).length !== 0;
-                    const haveBronze = this.props.variants.filter( v => v.rarity === "bronze" ).length !== 0;
-
-                    if(!haveBronze && !haveSilver && !haveGold) {
-                        resolve("No variants!");
-                    }
-
-                    if(rarityChance < normalizedGoldChance && haveGold) {
-                        rarity = "gold";
-                    } else if (rarityChance < normalizedSilverChance && haveSilver) {
-                        rarity = "silver";
-                    } else if (haveBronze){
-                        rarity = "bronze";
-                    } else {
-                        resolve("No variants!");
-                    }
-
-                    let variants;
-                    let variantIndex;
-                    let variantRealIndex;
-
-                    const compare = v => v === variants[variantIndex];
-
-                    while(true) {
-                        variants = this.props.variants.filter( v => v.rarity === rarity );
-                        variantIndex = random(0, variants.length - 1);
-                        // variantRealIndex = this.props.variants.length + 2 + this.props.variants.findIndex( v => v === variants[variantIndex] );
-                        variantRealIndex = this.props.variants.findIndex( compare );
-
-                        if(this.state.allowRepeat || this.lastResult !== variantRealIndex || variants.length === 1) {
-                            break
-                        }
-                    }
-
-                    if(!this.state.allowRepeat) {
-                        this.lastResult = variantRealIndex;
-                    }
-
-                    const fakeOffset = random(5, this.cardWidth - 5);
-
-                    const offsetToSpin = this.offsetInPx + this.cardWidth * variantRealIndex - this.rouletteWidth / 2 + fakeOffset;
-
-                    await this.scrollToLeft( offsetToSpin - 2000, 5 );
-                    await this.scrollToLeft( 800, 4 );
-                    await this.scrollToLeft( 600, 3 );
-                    await this.scrollToLeft( 400, 2 );
-                    await this.scrollToLeft( 200, 1 );
-
-                    if(fakeOffset > this.cardWidth / 2) {
-                        setTimeout(
-                            async () => {
-                                await this.scrollToLeft( this.cardWidth / 2 - fakeOffset, 1 );
-                                resolve(variants[variantIndex]);
-                            },
-                            500
-                        )
-                    } else {
-                        await this.scrollToLeft( this.cardWidth / 2 - fakeOffset, 1 );
-                        resolve(variants[variantIndex]);
-                    }
-
-                },
-                700
-            );
-        });
-    };
-
-    spin = async () => {
-        await this.setState({ showing: true });
-
-        this.audio && this.audio.play();
-        const variant = await this._spin();
-
-        if(this.audio) {
-            this.audio.pause();
-            this.audio.currentTime = 0;
+        if(goldTasks.length === 0 && silverTasks.length === 0 && bronzeTasks.length === 0) {
+            return "No variants!";
         }
 
-        return new Promise((resolve)=> {
-            setTimeout(
-                async () => {
-                    await this.setState({ showing: false });
-                    setTimeout(
-                        () => this.container.scroll(0, 0),
-                        702
-                    );
-                    resolve(variant);
-                },
-                (this.props.showingTime || 5) * 1000
-            )
+        const normalizedGoldChance = Math.ceil(this.props.goldChance * 100 / goldTasks.length);
+        const normalizedSilverChance = Math.ceil(this.props.silverChance * 100 / silverTasks.length);
+        const normalizedBronzeChance =
+            Math.ceil(( 100 - this.props.goldChance - this.props.silverChance ) * 100 / bronzeTasks.length);
+
+        const maxChance =
+            normalizedGoldChance * goldTasks.length +
+            normalizedSilverChance * silverTasks.length +
+            normalizedBronzeChance * bronzeTasks.length;
+
+        let variantIndex;
+        while(true) {
+            const taskChance = random(1, maxChance);
+            let currentChance = 0;
+            for(variantIndex = 0; variantIndex <  this.props.variants.length; variantIndex++) {
+                const { rarity } = this.props.variants[variantIndex];
+
+                if(rarity === 'bronze') {
+                    currentChance += normalizedBronzeChance;
+                } else if(rarity === 'silver') {
+                    currentChance += normalizedSilverChance;
+                } else {
+                    currentChance += normalizedGoldChance;
+                }
+
+                if(taskChance <= currentChance) {
+                    break;
+                }
+            }
+
+            if(!this.state.allowRepeat && this.lastResult !== variantIndex) {
+                this.lastResult = variantIndex;
+                break;
+            }
+        }
+
+        const cardWidth = this.props.cardWidth + this.cardMargin*2;
+        const offsetInPx = cardWidth * this.offsetInCards;
+        const fakeOffset = random(15, cardWidth - 15);
+
+        const offsetToSpin = offsetInPx + cardWidth * variantIndex - this.props.width / 2;
+
+        await this.scrollContainer(offsetToSpin + fakeOffset, 5);
+
+        await this.scrollContainer(offsetToSpin + cardWidth / 2, 0.5, 0.5, 'linear');
+
+        return this.props.variants[variantIndex];
+    };
+
+    spin = async (message) => {
+
+        await this.setState({
+            donate: message
+        });
+
+        this.refs.audio && this.refs.audio.play();
+
+        await this.toggleRoulette();
+        const variant = await this._spin();
+
+        if(this.refs.audio) {
+            this.refs.audio.pause();
+            this.refs.audio.currentTime = 0;
+        }
+
+        await this.toggleRoulette(5);
+
+        await this.setState({
+            scroll: this.state.startScroll
+        });
+
+        return ({
+            ...variant,
+            text: render(
+                variant.text,
+                {
+                    donate: this.state.donate
+                }
+            ),
         });
     };
 
-    clearError() {
-        this.setState({
-            frameError: false,
-            bgError: false
+    createRouletteTransitionPromise() {
+        this._rouletteTransitionPromise = new Promise( (resolve) => this._resolveRouletteTransition = resolve );
+    }
+
+    createContainerTransitionPromise() {
+        this._containerTransitionPromise = new Promise( (resolve) => this._resolveContainerTransition = resolve );
+    }
+
+    async scrollContainer(offset, duration=7, delay=0, func='cubic-bezier(0, 0, 0, 1)') {
+        this.createContainerTransitionPromise();
+
+        await this.setState({
+            duration,
+            delay,
+            func,
+            scroll: offset
+        });
+
+        await this._containerTransitionPromise;
+
+        await this.setState({
+            duration: 0,
         });
     }
+
+    async toggleRoulette(delay=0) {
+        this.createRouletteTransitionPromise();
+        await this.setState({
+            showing: !this.state.showing,
+            toggleDelay: delay
+        });
+        await this._rouletteTransitionPromise;
+    }
+
+    onRouletteMoved = () => {
+        this._resolveRouletteTransition && this._resolveRouletteTransition();
+    };
+
+    onContainerScrolled = (event) => {
+        event.stopPropagation();
+        this._resolveContainerTransition && this._resolveContainerTransition();
+    };
 
     componentDidMount() {
-        this.props.getSpin && this.props.getSpin(() => this.spin());
-        this.props.getClearError && this.props.getClearError(() => this.clearError());
+        this.onResize();
+
+        this.refs.roulette.addEventListener('transitionend', this.onRouletteMoved);
+        this.refs.container.addEventListener('transitionend', this.onContainerScrolled);
+
+        this.props.getSpin && this.props.getSpin( this.spin );
+        this.refs.audio.volume = this.props.spinSound.volume;
     }
 
-    handleBgError = () => {
-        this.setState({
-            bgError: true
-        });
-    };
-
-    handleFrameError = () => {
-        this.setState({
-            frameError: true
-        });
-    };
+    componentWillUnmount() {
+        this.refs.roulette.removeEventListener('transitionend', this.onRouletteMoved);
+        this.refs.container.removeEventListener('transitionend', this.onContainerScrolled);
+    }
 
     renderVariants() {
         if(this.props.variants.length === 0) {
             return [
-                <Variant key={ 0 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["bronze"] }/>,
-                <Variant key={ 1 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["silver"] }/>,
-                <Variant key={ 2 } text={ "Добавте задания в настройках" } bgPath={ this.props.bgPaths["gold"] }/>,
+                <Variant
+                    key={ 0 }
+                    width={ this.props.cardWidth }
+                    height={ this.props.cardHeight }
+                    text={ "Добавте задания в настройках" }
+                    bgImage={ this.props.bronzePath }
+                    bgColor={ this.props.colorBronze }
+                />,
             ]
         }
 
@@ -190,37 +188,104 @@ class Roulette extends Component {
 
         const variants = [...preVariants, ...this.props.variants, ...this.props.variants.slice(0, 2)];
         return variants.map(
-            (variant, index) => <Variant key={ index } text={ variant.text } bgPath={ this.props.bgPaths[variant.rarity] }/>
+            (variant, index) => (
+                <Variant
+                    width={ this.props.cardWidth }
+                    height={ this.props.cardHeight }
+                    key={ index }
+                    bgColor={ this.props['color' + variant.rarity.toUpperCase()[0] + variant.rarity.slice(1)] }
+                    text={
+                        render(
+                            variant.text,
+                            {
+                                donate: this.state.donate,
+                                money: this.props.money,
+                                discount: this.props.discount,
+                                state: this.props.currentState.state,
+                            }
+                        )
+                    }
+                    bgImage={ this.props[variant.rarity + 'Image'] }
+                />
+            )
         )
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(this.props.cardWidth !== prevProps.cardWidth || this.props.width !== prevProps.width) {
+            this.onResize();
+        }
+    }
+
+    onResize = () => {
+        const twoCardWidth = (this.props.cardWidth + this.cardMargin*2) * 2;
+        const offsetForFirstCard = (this.props.width - this.props.cardWidth - this.cardMargin*2) / 2;
+        const startScroll = twoCardWidth - offsetForFirstCard;
+
+        this.setState({
+            scroll: startScroll,
+            startScroll
+        })
+    };
 
     render() {
         return (
             <div className="frame">
-                {this.props.soundPath &&
-                    <audio loop ref={ a => this.audio = a } src={this.props.soundPath}/>
-                }
                 <div
                     style={{
-                        width: this.rouletteWidth
+                        backgroundColor: this.props.color,
+                        borderColor: this.props.color,
                     }}
-                    className={cn("roulette", { 'show': this.state.showing })}
+                    className="bg-color"
+                />
+                {this.props.spinSound &&
+                    <audio
+                        loop
+                        ref="audio"
+                        src={ 'file://' + this.props.spinSound.path }
+                    />
+                }
+                <div
+                    ref="roulette"
+                    style={{
+                        width: this.props.width,
+                        height: this.props.height,
+                        transitionDelay: this.state.toggleDelay + 's',
+                        top: this.state.showing? 0: undefined,
+                        paddingTop: this.props.paddingTop,
+                        paddingRight: this.props.paddingRight,
+                        paddingBottom: this.props.paddingBottom,
+                        paddingLeft: this.props.paddingLeft,
+                    }}
+                    className="roulette"
                 >
-                    {!this.state.bgError &&
-                        <img onError={this.handleBgError}
-                             className="background-image"
-                             src={ this.props.bgPaths['bg'] }
+                    {this.props.bgImage &&
+                        <img
+                            className="background-image"
+                             src={ 'file://' + this.props.bgImage.path }
                              alt="bg"
                         />
                     }
-                    <div ref={ div => this.container = div } className="container">
+                    <div
+                        ref="container"
+                        className="container"
+                        style={{
+                            transitionDuration: this.state.duration + 's',
+                            transitionTimingFunction: this.state.func,
+                            transitionDelay: this.state.delay + 's',
+                            right: this.state.scroll,
+                            paddingTop: (this.props.height - this.props.cardHeight) / 2
+                        }}
+                    >
                         { this.renderVariants() }
                     </div>
-                    {!this.state.frameError &&
+                    <div
+                        className="roulette-pointer"
+                    />
+                    {this.props.frameImage &&
                         <img
-                            onError={this.handleFrameError}
                             className="frame-image"
-                            src={ this.props.bgPaths['frame'] }
+                            src={ 'file://' + this.props.frameImage.path }
                             alt="frame"
                         />
                     }

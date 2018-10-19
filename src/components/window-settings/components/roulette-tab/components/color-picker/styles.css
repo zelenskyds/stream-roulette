@@ -1,0 +1,52 @@
+.color-picker {
+    max-width: 25px;
+    width: 25px;
+    height: 25px;
+    flex-grow: 0;
+    z-index: 1;
+    outline: none;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+    position: relative;
+    display: inline-block;
+}
+
+.color-picker-container {
+    position: absolute;
+    top: calc(100% + 5px);
+    /*top: 0;*/
+    /*left: 50%;*/
+    /*right: 0;*/
+    /*transform: translate(-50%);*/
+    box-shadow: 0 0 5px #000;
+    border-radius: 10px;
+    animation: 0.2s linear popup-enter;
+    transform-origin: top;
+}
+
+.color-picker-container button {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    right: 3px;
+    font-size: 15pt;
+    cursor: pointer;
+}
+
+.color-picker-color {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.color-picker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}

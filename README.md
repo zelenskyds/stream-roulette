@@ -1,21 +1,14 @@
 ## Стримерская рулетка
 
-### Использование
+Привет! Я [dize](https://www.twitch.tv/dize___), а это мой проект для души - стримерская рулетка.
 
-#### Скачать
+* [Скачать готовую сборку](https://github.com/zelenskyds/steam-roulette/releases)
+* [Инструкция по настройке и использованию](https://github.com/zelenskyds/stream-roulette/wiki)
+* [Описание изменений версии](./CHANGELOG.md)
+* [Планируется в следующих версиях](./ROADMAP.md)
 
-Скачать готовые сборки для Windows и Linux можно на странице [релизов](https://github.com/zelenskyds/steam-roulette/releases).
+###Проблеммы и их решения
+* Черный экран в OBS - попробуйте поставить совместимость с Windows 7.
 
-### Разработка
-
-#### Запуск
-```bash
-npm i
-npm run build
-npm run electron
-```
-
-#### Структура
-
-`main.js` - главный файл electron<br/>
-`src/components/window-*` - компоненты реакт для каждого окна рулетки
+---
+Если хотите связаться со мной, можете написать мне на [почту](mailto:zelenskyds@gmail.com) или в ЛС на twitch.tv.

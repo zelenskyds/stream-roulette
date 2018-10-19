@@ -1,8 +1,19 @@
 .settings-controls {
+    /*height: 0;*/
+    /*padding: 0;*/
     flex-shrink: 0;
-    height: 62px;
     background-color: #313335;
-    padding: 15px;
     display: flex;
     flex-direction: row-reverse;
+    overflow: hidden;
+    transition: all 0.2s linear;
+    height: 62px;
+    padding: 15px;
+    position: fixed;
+    bottom: -62px;
+    width: 100%;
+}
+
+.settings-controls.show {
+    bottom: 0;
 }
