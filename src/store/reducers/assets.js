@@ -1,4 +1,4 @@
-import { ADD_IMAGE, REMOVE_IMAGE, UPDATE_IMAGE } from '../constants'
+import { ADD_IMAGE, ADD_SOUND, REMOVE_IMAGE, REMOVE_SOUND, UPDATE_IMAGE, UPDATE_SOUND } from '../constants'
 
 import {
     addElement,
@@ -24,6 +24,24 @@ export default function(state={}, { type, payload }) {
             return {
                 ...state,
                 images: removeElement(state.images, payload)
+            };
+
+        case ADD_SOUND:
+            return {
+                ...state,
+                sounds: addElement(state.sounds, payload)
+            };
+
+        case UPDATE_SOUND:
+            return {
+                ...state,
+                sounds: updateElement(state.sounds, payload)
+            };
+
+        case REMOVE_SOUND:
+            return {
+                ...state,
+                sounds: removeElement(state.sounds, payload)
             };
 
         default:

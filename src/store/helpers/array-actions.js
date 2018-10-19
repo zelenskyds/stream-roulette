@@ -7,7 +7,7 @@ function updateOrRemove(array, element, update=false) {
     const result = [...array];
 
     if(update) {
-        result.splice(index, 1, { ...element });
+        result.splice(index, 1, { ...result[index], ...element });
     } else {
         result.splice(index, 1);
     }

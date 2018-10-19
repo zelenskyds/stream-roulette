@@ -68,6 +68,8 @@ class WindowRoulette extends Window {
                     goldImage={ getImageById(this.props.windows.roulette.images.gold) }
                     silverImage={ getImageById(this.props.windows.roulette.images.silver) }
                     bronzeImage={ getImageById(this.props.windows.roulette.images.bronze) }
+
+                    currentState={ this.props.currentState }
                 />
             </div>
         );

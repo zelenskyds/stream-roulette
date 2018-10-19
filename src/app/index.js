@@ -11,7 +11,9 @@ import initIPC from './helpers/signals';
 import initAssets from './helpers/init-assets';
 
 app.commandLine.appendSwitch('--autoplay-policy', 'no-user-gesture-required');
-// app.disableHardwareAcceleration();
+if(process.env.DISABLE_HARDWARE_ACCELERATION === "true") {
+    app.disableHardwareAcceleration();
+}
 
 const windows = {};
 let store;
@@ -28,9 +30,12 @@ app.on('ready', () => {
         money: {
             earned: 0,
             amount: config.money.startAmountForSpin,
+            discountEarned: 0
         },
         donate: {},
-        state: {}
+        state: {
+            discount: false
+        }
     };
 
     initAssets(config.assets.userDataPrefix);
@@ -38,7 +43,7 @@ app.on('ready', () => {
     store = createStore(config);
 
     windows.controls = new Controls(store);
-    windows.settings = new Settings(store, true);
+    windows.settings = new Settings(store);
     windows.roulette = new Roulette(store);
 
     for(const widget of store.getState().windows.widgets) {

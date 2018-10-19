@@ -2,10 +2,10 @@ import React from 'react';
 import { InputNumber, Select } from 'antd';
 import ColorPicker from "./components/color-picker";
 import TabContainer from "../tab-container";
-import './styles.css';
 import ImagePicker from "./components/image-picker";
 import { getImageById } from "../../../../store/helpers/relations";
 import Arrow from "./components/arrow";
+import './styles.css';
 
 const { Option } = Select;
 //width="65%"
@@ -25,7 +25,9 @@ const RouletteTab = ({
     cardHeight,
     colorBronze,
     colorSilver,
-    colorGold
+    colorGold,
+    sounds,
+    spinSound
 }) => (
     <TabContainer>
         <div className="roulette-tab">
@@ -254,6 +256,33 @@ const RouletteTab = ({
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div className="roulette-tab-sound">
+                Звук прокрутки рулетки &nbsp;
+                <Select
+                    className="roulette-tab-sound-select"
+                    onSelect={
+                        (key) => onChange(actions.updateRouletteSounds({
+                            spin: key
+                        }))
+                    }
+                    defaultValue={spinSound}
+                >
+                    <Option value={ null }>Нет</Option>
+                    {
+                        sounds.map(
+                            sound => (
+                                <Option
+                                    key={ sound.id }
+                                    value={ sound.id }
+                                >
+                                    { sound.name }
+                                </Option>
+                            )
+                        )
+                    }
+                </Select>
             </div>
         </div>
     </TabContainer>

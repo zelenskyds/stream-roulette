@@ -1,8 +1,5 @@
 import dot from 'dot';
 
-// dot.templateSettings.interpolate = /\{([\s\S]+?)\}/g;
-// dot.templateSettings.varname = "donate, money, results, state";
-
 dot.templateSettings = {
     evaluate:    "",
     interpolate: /\{([\s\S]+?)\}/g,
@@ -11,15 +8,15 @@ dot.templateSettings = {
     define:      "",
     conditional: "",
     iterate:     "",
-    varname: "donate, money, results, state",
+    varname: "donate, money, discount, results, state",
     strip: true,
     append: true,
     selfcontained: false
 };
 
-export default function (template, {donate, money, results, state}) {
+export default function (template, {donate, money, discount, results, state}) {
     try {
-        return dot.template(template)(donate, money, results, state);
+        return dot.template(template)(donate, money, discount, results, state);
     } catch (e) {
         return template;
     }

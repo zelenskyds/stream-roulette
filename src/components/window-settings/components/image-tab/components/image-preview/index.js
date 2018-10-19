@@ -17,6 +17,7 @@ const ImagePreview = (props) => (
             }
         </span>
         <Upload
+            accept="image/*"
             name={ props.path }
             listType="picture-card"
             className="bg-image"

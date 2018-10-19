@@ -1,7 +1,6 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { getImageById } from "../../store/helpers/relations";
 import render from '../../services/render-dot';
-// import cn from 'classnames';
 import './styles.css';
 
 const { remote, ipcRenderer } = window.require('electron');
@@ -42,15 +41,13 @@ class WindowScore extends Component {
         for(const layer of widget.layers) {
             const text = render(layer.text, {
                 donate: this.props.currentState.donate,
-                money: {
-                    ...this.props.currentState.money,
-                    discount: this.props.discount.value
-                },
+                money: this.props.currentState.money,
+                discount: this.props.discount,
                 results: this.props.currentState.spinResults,
             });
             const show = layer.condition?
                 Object.entries(layer.condition).map(
-                    ([key, value]) => this.props.currentState.state[key] === value
+                    ([key, value]) => value === null || this.props.currentState.state[key] === value
                 ).reduce( (accumulator, currentValue) => accumulator && currentValue, true )
                 :
                 true;

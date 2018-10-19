@@ -1,170 +1,168 @@
 import React, { Component } from 'react';
 import Variant from './variant/index';
-import cn from 'classnames';
 import random from '../../../services/random';
-import './styles.css';
 import render from '../../../services/render-dot';
+import './styles.css';
 
 class Roulette extends Component {
     state = {
         showing: false,
-        offsetWidth: 0,
-        startScroll: 0
+        startScroll: 0,
+        duration: 0
     };
 
-    container = null;
     lastResult = null;
-    audio = null;
 
     cardMargin = 10;
     offsetInCards = 42;
 
-    async scrollToLeft(px, pxPerMs=5) {
-        return new Promise((resolve) => {
-            let direction = 1;
+    async _spin() {
+        const goldTasks = this.props.variants.filter( v => v.rarity === "gold" );
+        const silverTasks = this.props.variants.filter( v => v.rarity === "silver" );
+        const bronzeTasks = this.props.variants.filter( v => v.rarity === "bronze" );
 
-            if(px < 0) {
-                direction = -1;
-            }
+        if(goldTasks.length === 0 && silverTasks.length === 0 && bronzeTasks.length === 0) {
+            return "No variants!";
+        }
 
-            let x = 0;
-            const r = setInterval(() => {
-                if(Math.abs(x + direction * pxPerMs) > Math.abs(px)) {
-                    this.container.scrollBy({left: px - x});
-                    clearInterval(r);
-                    resolve(this.container.scrollLeft);
+        const normalizedGoldChance = Math.ceil(this.props.goldChance * 100 / goldTasks.length);
+        const normalizedSilverChance = Math.ceil(this.props.silverChance * 100 / silverTasks.length);
+        const normalizedBronzeChance =
+            Math.ceil(( 100 - this.props.goldChance - this.props.silverChance ) * 100 / bronzeTasks.length);
+
+        const maxChance =
+            normalizedGoldChance * goldTasks.length +
+            normalizedSilverChance * silverTasks.length +
+            normalizedBronzeChance * bronzeTasks.length;
+
+        let variantIndex;
+        while(true) {
+            const taskChance = random(1, maxChance);
+            let currentChance = 0;
+            for(variantIndex = 0; variantIndex <  this.props.variants.length; variantIndex++) {
+                const { rarity } = this.props.variants[variantIndex];
+
+                if(rarity === 'bronze') {
+                    currentChance += normalizedBronzeChance;
+                } else if(rarity === 'silver') {
+                    currentChance += normalizedSilverChance;
                 } else {
-                    this.container.scrollBy({left: direction * pxPerMs});
+                    currentChance += normalizedGoldChance;
                 }
 
-                x = (x + direction * pxPerMs);
-            }, 1);
-        });
-    }
+                if(taskChance <= currentChance) {
+                    break;
+                }
+            }
 
-    _spin = async () => {
-        return new Promise((resolve)=> {
-            setTimeout(
-                async () => {
-                    const rarityChance = random(0, 10000);
-                    const normalizedGoldChance = (this.props.goldChance || 1) * 100;
-                    const normalizedSilverChance = ( this.props.silverChance || 10 ) * 100 + normalizedGoldChance;
+            if(!this.state.allowRepeat && this.lastResult !== variantIndex) {
+                this.lastResult = variantIndex;
+                break;
+            }
+        }
 
-                    let rarity;
+        const cardWidth = this.props.cardWidth + this.cardMargin*2;
+        const offsetInPx = cardWidth * this.offsetInCards;
+        const fakeOffset = random(15, cardWidth - 15);
 
-                    const haveGold = this.props.variants.filter( v => v.rarity === "gold" ).length !== 0;
-                    const haveSilver = this.props.variants.filter( v => v.rarity === "silver" ).length !== 0;
-                    const haveBronze = this.props.variants.filter( v => v.rarity === "bronze" ).length !== 0;
+        const offsetToSpin = offsetInPx + cardWidth * variantIndex - this.props.width / 2;
 
-                    if(!haveBronze && !haveSilver && !haveGold) {
-                        resolve("No variants!");
-                    }
+        await this.scrollContainer(offsetToSpin + fakeOffset, 5);
 
-                    if(rarityChance < normalizedGoldChance && haveGold) {
-                        rarity = "gold";
-                    } else if (rarityChance < normalizedSilverChance && haveSilver) {
-                        rarity = "silver";
-                    } else if (haveBronze){
-                        rarity = "bronze";
-                    } else {
-                        resolve("No variants!");
-                        return;
-                    }
+        await this.scrollContainer(offsetToSpin + cardWidth / 2, 0.5, 0.5, 'linear');
 
-                    let variants;
-                    let variantIndex;
-                    let variantRealIndex;
-
-                    const compare = v => v === variants[variantIndex];
-
-                    while(true) {
-                        variants = this.props.variants.filter( v => v.rarity === rarity );
-                        variantIndex = random(0, variants.length - 1);
-                        // variantRealIndex = this.props.variants.length + 2 + this.props.variants.findIndex( v => v === variants[variantIndex] );
-                        variantRealIndex = this.props.variants.findIndex( compare );
-
-                        if(this.state.allowRepeat || this.lastResult !== variantRealIndex || variants.length === 1) {
-                            break
-                        }
-                    }
-
-                    if(!this.state.allowRepeat) {
-                        this.lastResult = variantRealIndex;
-                    }
-
-                    const cardWidth = this.props.cardWidth + this.cardMargin*2;
-                    const offsetInPx = cardWidth * this.offsetInCards + this.state.offsetWidth - this.state.startScroll;
-                    const fakeOffset = random(5, cardWidth - 5);
-
-                    const offsetToSpin =
-                        offsetInPx + cardWidth * variantRealIndex - this.props.width / 2 + fakeOffset;
-
-                    // await this.scrollToLeft( offsetToSpin, 5 );
-                    await this.scrollToLeft( offsetToSpin - 2000, 5 );
-                    await this.scrollToLeft( 800, 4 );
-                    await this.scrollToLeft( 600, 3 );
-                    await this.scrollToLeft( 400, 2 );
-                    await this.scrollToLeft( 200, 1 );
-
-                    if(fakeOffset > cardWidth / 2) {
-                        setTimeout(
-                            async () => {
-                                await this.scrollToLeft( cardWidth / 2 - fakeOffset, 1 );
-                                resolve(variants[variantIndex]);
-                            },
-                            500
-                        )
-                    } else {
-                        await this.scrollToLeft( cardWidth / 2 - fakeOffset, 1 );
-                        resolve(variants[variantIndex]);
-                    }
-
-                },
-                700
-            );
-        });
+        return this.props.variants[variantIndex];
     };
 
     spin = async (message) => {
 
         await this.setState({
-            showing: true,
             donate: message
         });
 
-        this.audio && this.audio.play();
+        this.refs.audio && this.refs.audio.play();
+
+        await this.toggleRoulette();
         const variant = await this._spin();
 
-        if(this.audio) {
-            this.audio.pause();
-            this.audio.currentTime = 0;
+        if(this.refs.audio) {
+            this.refs.audio.pause();
+            this.refs.audio.currentTime = 0;
         }
 
-        return new Promise((resolve)=> {
-            setTimeout(
-                async () => {
-                    await this.setState({ showing: false });
-                    setTimeout(
-                        () => this.container.scroll(this.state.startScroll, 0),
-                        702
-                    );
-                    resolve({
-                        ...variant,
-                        text: render(
-                            variant.text,
-                            {
-                                donate: this.state.donate
-                            }
-                        ),
-                    });
-                },
-                (this.props.showingTime || 5) * 1000
-            )
+        await this.toggleRoulette(5);
+
+        await this.setState({
+            scroll: this.state.startScroll
+        });
+
+        return ({
+            ...variant,
+            text: render(
+                variant.text,
+                {
+                    donate: this.state.donate
+                }
+            ),
         });
     };
 
+    createRouletteTransitionPromise() {
+        this._rouletteTransitionPromise = new Promise( (resolve) => this._resolveRouletteTransition = resolve );
+    }
+
+    createContainerTransitionPromise() {
+        this._containerTransitionPromise = new Promise( (resolve) => this._resolveContainerTransition = resolve );
+    }
+
+    async scrollContainer(offset, duration=7, delay=0, func='cubic-bezier(0, 0, 0, 1)') {
+        this.createContainerTransitionPromise();
+
+        await this.setState({
+            duration,
+            delay,
+            func,
+            scroll: offset
+        });
+
+        await this._containerTransitionPromise;
+
+        await this.setState({
+            duration: 0,
+        });
+    }
+
+    async toggleRoulette(delay=0) {
+        this.createRouletteTransitionPromise();
+        await this.setState({
+            showing: !this.state.showing,
+            toggleDelay: delay
+        });
+        await this._rouletteTransitionPromise;
+    }
+
+    onRouletteMoved = () => {
+        this._resolveRouletteTransition && this._resolveRouletteTransition();
+    };
+
+    onContainerScrolled = (event) => {
+        event.stopPropagation();
+        this._resolveContainerTransition && this._resolveContainerTransition();
+    };
+
     componentDidMount() {
+        this.onResize();
+
+        this.refs.roulette.addEventListener('transitionend', this.onRouletteMoved);
+        this.refs.container.addEventListener('transitionend', this.onContainerScrolled);
+
         this.props.getSpin && this.props.getSpin( this.spin );
+        this.refs.audio.volume = this.props.spinSound.volume;
+    }
+
+    componentWillUnmount() {
+        this.refs.roulette.removeEventListener('transitionend', this.onRouletteMoved);
+        this.refs.container.removeEventListener('transitionend', this.onContainerScrolled);
     }
 
     renderVariants() {
@@ -200,7 +198,10 @@ class Roulette extends Component {
                         render(
                             variant.text,
                             {
-                                donate: this.state.donate
+                                donate: this.state.donate,
+                                money: this.props.money,
+                                discount: this.props.discount,
+                                state: this.props.currentState.state,
                             }
                         )
                     }
@@ -217,31 +218,14 @@ class Roulette extends Component {
     }
 
     onResize = () => {
-        if(!this.container) {
-            return
-        }
-
         const twoCardWidth = (this.props.cardWidth + this.cardMargin*2) * 2;
         const offsetForFirstCard = (this.props.width - this.props.cardWidth - this.cardMargin*2) / 2;
-        if(twoCardWidth > offsetForFirstCard) {
-            const startScroll = twoCardWidth - offsetForFirstCard;
-            this.container.scroll(startScroll, 0);
-            this.setState({
-                offsetWidth: 0,
-                startScroll
-            })
-        } else {
-            this.container.scroll(0, 0);
-            this.setState({
-                offsetWidth: offsetForFirstCard - twoCardWidth,
-                startScroll: 0
-            })
-        }
-    };
+        const startScroll = twoCardWidth - offsetForFirstCard;
 
-    containerRef = (div) => {
-        this.container = div;
-        this.onResize();
+        this.setState({
+            scroll: startScroll,
+            startScroll
+        })
     };
 
     render() {
@@ -257,51 +241,46 @@ class Roulette extends Component {
                 {this.props.spinSound &&
                     <audio
                         loop
-                        ref={ a => this.audio = a }
+                        ref="audio"
                         src={ 'file://' + this.props.spinSound.path }
                     />
                 }
                 <div
+                    ref="roulette"
                     style={{
                         width: this.props.width,
                         height: this.props.height,
+                        transitionDelay: this.state.toggleDelay + 's',
+                        top: this.state.showing? 0: undefined,
                         paddingTop: this.props.paddingTop,
                         paddingRight: this.props.paddingRight,
                         paddingBottom: this.props.paddingBottom,
                         paddingLeft: this.props.paddingLeft,
                     }}
-                    className={cn("roulette", { 'show': this.state.showing })}
+                    className="roulette"
                 >
                     {this.props.bgImage &&
-                        <img className="background-image"
+                        <img
+                            className="background-image"
                              src={ 'file://' + this.props.bgImage.path }
                              alt="bg"
                         />
                     }
                     <div
-                        ref={ this.containerRef }
+                        ref="container"
                         className="container"
                         style={{
+                            transitionDuration: this.state.duration + 's',
+                            transitionTimingFunction: this.state.func,
+                            transitionDelay: this.state.delay + 's',
+                            right: this.state.scroll,
                             paddingTop: (this.props.height - this.props.cardHeight) / 2
                         }}
                     >
-                        <div
-                            className="roulette-offset"
-                            style={{
-                                width: this.state.offsetWidth
-                            }}
-                        />
                         { this.renderVariants() }
                     </div>
                     <div
                         className="roulette-pointer"
-                        style={{
-                            width: this.props.cardWidth,
-                            height: this.props.cardHeight,
-                            left: this.props.paddingLeft + (this.props.width - this.props.cardWidth) / 2,
-                            top: this.props.paddingTop + (this.props.height - this.props.cardHeight) / 2,
-                            // top: `calc(50% - ${this.props.cardHeight / 2}px)`
-                        }}
                     />
                     {this.props.frameImage &&
                         <img

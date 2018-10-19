@@ -152,3 +152,12 @@
 .roulette-tab-control .image-picker {
     display: inline-block;
 }
+
+div.roulette-tab-sound {
+    display: flex;
+    justify-content: start;
+}
+
+.roulette-tab-sound-select {
+    width: 150px;
+}

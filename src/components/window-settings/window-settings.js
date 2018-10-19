@@ -5,12 +5,10 @@ import SettingsControls from "./components/settings-controls";
 import ImageTab from "./components/image-tab";
 import RouletteTab from "./components/roulette-tab";
 import TasksTab from "./components/tasks-tab";
-import render from '../../services/render-dot';
 import deepmerge from 'deepmerge';
 import './styles.css';
-import WidgetTab from "./components/widget-tab";
-
-window.$R = render;
+import SoundTab from "./components/sound-tab";
+// import WidgetTab from "./components/widget-tab";
 
 const { TabPane } = Tabs;
 const { ipcRenderer } = window.require('electron');
@@ -75,7 +73,6 @@ class WindowSettings extends Component {
         let currentIndex = 0;
 
         for(const action of actionArray) {
-            console.log( action );
             if(currentIndex !== lastIndex) {
                 this.props.dispatch(action);
             } else {
@@ -99,8 +96,7 @@ class WindowSettings extends Component {
             <div className="window-settings">
                 <div className="tabs-container">
                     <Tabs
-                        defaultActiveKey="widget"
-                        // size="small"
+                        defaultActiveKey="sound"
                         tabPosition="left"
                     >
                         <TabPane tab="Общее" key="main">
@@ -133,14 +129,11 @@ class WindowSettings extends Component {
                             />
                         </TabPane>
                         <TabPane tab="Звуки" key="sound">
-                            {/*<Upload*/}
-                            {/*fileList={this.state.soundList}*/}
-                            {/*onChange={this.handleAudioChange}*/}
-                            {/*beforeUpload={()=>false}>*/}
-                            {/*<Button>*/}
-                            {/*<Icon type="caret-right" /> Выбрать звук прокрутки*/}
-                            {/*</Button>*/}
-                            {/*</Upload>*/}
+                            <SoundTab
+                                actions={ this.props.actions }
+                                onChange={ this.handleChange }
+                                sounds={ this.props.assets.sounds }
+                            />
                         </TabPane>
                         <TabPane tab="Рулетка" key="roulette">
                             <RouletteTab
@@ -164,22 +157,10 @@ class WindowSettings extends Component {
 
                                 cardWidth={ this.props.windows.roulette.cardWidth }
                                 cardHeight={ this.props.windows.roulette.cardHeight }
+
+                                sounds={ this.props.assets.sounds }
+                                spinSound={ this.props.windows.roulette.sound.spin }
                             />
-                        </TabPane>
-                        <TabPane tab="Виджеты" key="widget">
-                            <WidgetTab
-                                widgets={ this.props.windows.widgets }
-                                images={ this.props.assets.images }
-                            />
-                            {/*<PreferencesTab*/}
-                                {/*bgPath={ this.state.bgPath }*/}
-                                {/*bgScorePath={ this.state.bgScorePath }*/}
-                                {/*framePath={ this.state.framePath }*/}
-                                {/*bronzePath={ this.state.bronzePath }*/}
-                                {/*silverPath={ this.state.silverPath }*/}
-                                {/*goldPath={ this.state.goldPath }*/}
-                                {/*onChange={ this.handleChangePreferences }*/}
-                            {/*/>*/}
                         </TabPane>
                         <TabPane tab="Задания" key="tasks">
                             <TasksTab

@@ -10,18 +10,8 @@ import { openWindow, closeWindow } from "../../services/window";
 import Window from "../window";
 
 class WindowControls extends Window {
-    isDiscount = false;
     spinning = null;
-    amount = 0;
-    discountSumEarned = 0;
     discountInterval = null;
-    discountTime = +localStorage.getItem("discountTime") || 15;
-    discountDuration = +localStorage.getItem("discountDuration") || 1;
-    discountChance = +localStorage.getItem("discountChance");
-    amountForSpin = +localStorage.getItem("startAmountForSpin") || 300;
-    amountFunction = localStorage.getItem("amountFunction") || "add";
-    amountFunctionA = +localStorage.getItem("amountFunctionA") || 100;
-    rouletteWindowWidth = +localStorage.getItem("rouletteWindowWidth") || 930;
 
     constructor(...args) {
         super(...args);
@@ -29,43 +19,55 @@ class WindowControls extends Window {
         this.initDonationSystems();
     }
 
-    componentDidMount() {
+    componentDidUpdate(prevProps, prevState) {
+        const { roulette } = this.props.currentState.isOpened;
+        const { roulette: roulettePrev } = prevProps.currentState.isOpened;
 
-        // this.discountInterval = setInterval(
-        //     () => this.makeDiscount(),
-        //     this.discountTime * 60000
-        // );
+        if(roulette && roulettePrev !== roulette) {
+            clearInterval(this.discountInterval);
+            this.discountInterval = setInterval(
+                () => this.makeDiscount(),
+                this.props.discount.time * 60000
+            );
+        } else if(!roulette && roulettePrev !== roulette) {
+            clearInterval(this.discountInterval);
+        }
     }
 
     makeDiscount() {
-        this.isDiscount = random(1, 100) <= (this.discountChance >= 0? this.discountChance: 50);
+        const isDiscount = random(1, 100) <= this.props.discount.chance;
 
-        if(!this.isDiscount) {
+        if(!isDiscount) {
             return;
         }
 
+        this.props.updateCurrentState({
+            discount: true
+        });
+
         setTimeout(
             () => {
-                if(this.isDiscount) {
-                    this.isDiscount = false;
-                    this.amount += this.discountSumEarned;
-                    // ipcRenderer.send("donate", { amount: this.amountForSpin - this.amount, discount: false });
+                if(this.props.currentState.state.discount) {
+                    this.props.updateCurrentState({
+                        discount: false
+                    });
+                    const { money: { earned, discountEarned } } = this.props.currentState;
+                    this.props.updateEarned(earned + discountEarned);
+                    this.props.updateDiscountEarned(0);
                 }
             },
-            this.discountDuration * 60000
+            this.props.discount.duration * 60000
         );
-
-        // ipcRenderer.send("donate", { amount: Math.ceil((this.amountForSpin - this.amount) / 2), discount: true });
     }
 
     calculateNewAmountForSpin() {
         switch (this.props.money.func) {
             case "add":
-                return this.props.money.amountForSpin + this.props.money.funcA;
+                return this.props.currentState.money.amount + this.props.money.funcA;
             case "multiply":
-                return Math.ceil(this.props.money.amountForSpin * this.props.money.funcA);
+                return Math.ceil(this.props.currentState.money.amount * this.props.money.funcA);
             default:
-                return this.props.money.amountForSpin;
+                return this.props.money.startAmountForSpin;
         }
     }
 
@@ -74,18 +76,19 @@ class WindowControls extends Window {
             return;
         }
 
-        const { money: { earned, amount } } = this.props.currentState;
-        const { updateEarned, updateCurrentAmount } = this.props;
+        const { money: { earned, amount, discountEarned } } = this.props.currentState;
+        const { updateEarned, updateCurrentAmount, updateDiscountEarned } = this.props;
 
-        if( this.isDiscount ) {
-            const mod = (this.amountForSpin - this.amount) / 2 - this.discountSumEarned;
+        if( this.props.currentState.state.discount ) {
+            const mod = Math.ceil((amount - earned) * this.props.discount.value) - discountEarned;
             if( message.amount < mod ) {
-                this.discountSumEarned += message.amount;
-                // ipcRenderer.send("donate", { amount: (this.amountForSpin - this.amount) / 2 - this.discountSumEarned, discount: true });
+                updateDiscountEarned(discountEarned + message.amount);
                 return;
             } else {
-                this.amount += this.discountSumEarned;
-                this.discountSumEarned = 0;
+                updateDiscountEarned(0);
+                this.props.updateCurrentState({
+                    discount: false
+                });
             }
         } else if( (earned + message.amount) < amount ) {
             updateEarned(earned + message.amount);
@@ -111,7 +114,7 @@ class WindowControls extends Window {
             this.socket.disconnect();
         }
 
-        this.socket = io("socket.donationalerts.ru:3001");
+        this.socket = io("http://socket.donationalerts.ru:3001");
         this.socket.emit('add-user', {token, type: "minor"});
         this.socket.on('donation', async (json) => {
             await this.handleDonate(JSON.parse(json));

@@ -33,8 +33,9 @@
     "dev-electron": "ELECTRON_START_URL=http://localhost:3000 electron .",
     "start": "react-scripts start",
     "build-front": "react-scripts build",
-    "build-back": "babel src/app --out-file build/index.js",
-    "build": "npm-run-all build-front build-back",
+    "build-back": "babel src/app -d build/app",
+    "build-store": "babel src/store -d build/store",
+    "build": "npm-run-all build-front build-back build-store",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

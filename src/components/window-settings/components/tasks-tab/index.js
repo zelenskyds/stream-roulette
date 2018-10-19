@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import { Card, Icon } from 'antd';
 import AddTask from "./components/add-task";
-import rarityRus from './components/rarity';
 import TabContainer from "../tab-container";
+import CardTask from "./components/card-task";
+
 import './styles.css';
 
 class TasksTab extends Component {
-
     handleSave = (task) => {
         this.props.onChange(this.props.actions.addTask(task));
+    };
+
+    handleUpdate = (task) => {
+        this.props.onChange(this.props.actions.updateTask(task));
     };
 
     handleDelete(id) {
@@ -22,24 +25,12 @@ class TasksTab extends Component {
                     {
                         this.props.tasks.map(
                             task => (
-                                <Card
+                                <CardTask
+                                    onSave={ this.handleUpdate }
+                                    onDelete={ this.handleDelete(task.id) }
                                     key={task.id}
-                                    style={{
-                                        width: '30%',
-                                        height: 165
-                                    }}
-                                    actions={[
-                                        //<Icon onClick={this.handleSave} type="edit" />,
-                                        <Icon onClick={this.handleDelete(task.id)} type="delete" />
-                                    ]}
-                                >
-                                    <div className="task-card-container">
-                                        <div>
-                                            {task.text}
-                                        </div>
-                                        <a className="rarity-chooser">{rarityRus[task.rarity]}</a>
-                                    </div>
-                                </Card>
+                                    task={task}
+                                />
                             )
                         )
                     }

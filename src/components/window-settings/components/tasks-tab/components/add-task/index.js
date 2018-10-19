@@ -7,11 +7,16 @@ import './styles.css';
 
 
 class AddTask extends Component {
-    state = {
-        isEditing: false,
-        rarity: "bronze",
-        text: ""
-    };
+    constructor(props) {
+        super( props );
+
+        this.state = {
+            isEditing: props.isEditing,
+            rarity: props.rarity || "bronze",
+            text: props.text || ""
+        };
+    }
+
 
     setEditing = () => {
         this.setState({
@@ -34,9 +39,9 @@ class AddTask extends Component {
     };
 
     handleSave = () => {
-        this.handleCancel();
+        this.props.onClose? this.props.onClose(): this.handleCancel();
         this.props.onSave({
-            id: Date.now(),
+            id: this.props.id || Date.now(),
             rarity: this.state.rarity,
             text: this.state.text
         });
@@ -49,7 +54,14 @@ class AddTask extends Component {
     };
 
     render() {
-        if(this.state.isEditing) {
+        let isEditing;
+        if(this.props.isEditing !== undefined) {
+            isEditing = this.props.isEditing;
+        } else {
+            isEditing = this.state.isEditing;
+        }
+
+        if(isEditing) {
             return (
                 <Card
                     style={{
@@ -58,11 +70,13 @@ class AddTask extends Component {
                     }}
                     actions={[
                         <Icon onClick={this.handleSave} type="save" />,
-                        <Icon onClick={this.handleCancel} type="delete" />
+                        <Icon onClick={this.props.onClose || this.handleCancel} type="close" />
                     ]}
                 >
                     <Fragment>
-                        <div>
+                        <div
+                            className={"card-task-input"}
+                        >
                             <Input.TextArea
                                 value={ this.state.text }
                                 onChange={ this.handleChangeText }

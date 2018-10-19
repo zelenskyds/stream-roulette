@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import {
-    UPDATE_IMAGE
+    ADD_IMAGE,
+    UPDATE_IMAGE,
+    UPDATE_SOUND
 } from "../constants";
 
 export default store => next => action => {
@@ -18,7 +20,7 @@ export default store => next => action => {
             delete action.payload.loading;
             delete action.meta.copy;
             action.meta.save = true;
-            action.type = UPDATE_IMAGE;
+            action.type = action.type === ADD_IMAGE? UPDATE_IMAGE: UPDATE_SOUND;
             store.dispatch(action);
         });
 

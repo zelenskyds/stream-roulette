@@ -1,4 +1,4 @@
-import { UPDATE_ROULETTE_IMAGES, UPDATE_WINDOWS } from "../constants";
+import { UPDATE_ROULETTE_IMAGES, UPDATE_ROULETTE_SOUNDS, UPDATE_WINDOWS } from "../constants";
 
 export default function(state={}, { type, payload }) {
     switch (type) {
@@ -30,6 +30,29 @@ export default function(state={}, { type, payload }) {
                     }
                 }
             };
+
+        case UPDATE_ROULETTE_SOUNDS:
+            console.log( {
+                ...state,
+                roulette: {
+                    ...state.roulette,
+                    sound: {
+                        ...state.roulette.sound,
+                        ...payload
+                    }
+                }
+            } );
+            return {
+                ...state,
+                roulette: {
+                    ...state.roulette,
+                    sound: {
+                        ...state.roulette.sound,
+                        ...payload
+                    }
+                }
+            };
+
         default:
             return state
     }

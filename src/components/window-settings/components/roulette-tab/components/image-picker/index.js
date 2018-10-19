@@ -11,7 +11,6 @@ class ImagePicker extends Component {
         }
     }
 
-
     open = () => {
         this.setState({
             isOpen: true
@@ -41,6 +40,7 @@ class ImagePicker extends Component {
             >
                 {this.state.value?
                     <img
+                        alt="picker-preview"
                         onClick={ this.open }
                         className="image-picker-preview"
                         src={ 'file://' + this.state.value.path }
@@ -71,7 +71,7 @@ class ImagePicker extends Component {
                                                     key={ img.id }
                                                     onClick={ this.makeHandleClick(img) }
                                                 >
-                                                    <img src={ 'file://' + img.path } />
+                                                    <img alt="picker-variant" src={ 'file://' + img.path } />
                                                 </button>
                                             )
 
