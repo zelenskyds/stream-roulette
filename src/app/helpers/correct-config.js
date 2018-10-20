@@ -5,11 +5,11 @@ export default function (config, screen) {
 
     if(!config.system) {
         config.system = {
-            version: "v0.4.0"
+            version: "v0.4.1"
         }
-    } else if(!config.system.version) {
+    } else if(config.system.version !== "v0.4.1") {
         config.system = {
-            version: "v0.4.0"
+            version: "v0.4.1"
         }
     }
 
