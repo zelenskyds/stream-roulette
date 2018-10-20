@@ -157,7 +157,9 @@ class Roulette extends Component {
         this.refs.container.addEventListener('transitionend', this.onContainerScrolled);
 
         this.props.getSpin && this.props.getSpin( this.spin );
-        this.refs.audio.volume = this.props.spinSound.volume;
+        if(this.props.spinSound) {
+            this.refs.audio.volume = this.props.spinSound.volume;
+        }
     }
 
     componentWillUnmount() {
@@ -214,6 +216,12 @@ class Roulette extends Component {
     componentDidUpdate(prevProps, prevState) {
         if(this.props.cardWidth !== prevProps.cardWidth || this.props.width !== prevProps.width) {
             this.onResize();
+        }
+
+        if(this.props.spinSound) {
+            if(this.refs.audio.volume !== this.props.spinSound.volume) {
+                this.refs.audio.volume = this.props.spinSound.volume;
+            }
         }
     }
 
@@ -281,6 +289,9 @@ class Roulette extends Component {
                     </div>
                     <div
                         className="roulette-pointer"
+                        style={{
+                            left: this.props.width / 2 + this.props.paddingLeft - 2
+                        }}
                     />
                     {this.props.frameImage &&
                         <img

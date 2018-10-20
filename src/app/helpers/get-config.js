@@ -3,10 +3,10 @@ import path from 'path';
 
 import createDefaultConfig from './create-default-config';
 
-module.exports = function(prefix, screenSize) {
+export default function(prefix) {
     try {
         return JSON.parse(fs.readFileSync(path.join(prefix, "config.json")));
     } catch(error) {
-        return createDefaultConfig(prefix, screenSize);
+        return createDefaultConfig(prefix);
     }
 };

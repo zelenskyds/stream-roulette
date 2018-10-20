@@ -8,6 +8,8 @@ import { spinRoulette } from "../../services/remote";
 import DonatePay from "../../services/donatepay-api";
 import { openWindow, closeWindow } from "../../services/window";
 import Window from "../window";
+import { Button } from "antd";
+import updateApplication from '../../services/update-application';
 
 class WindowControls extends Window {
     spinning = null;
@@ -127,7 +129,7 @@ class WindowControls extends Window {
         }
 
         if(this.donatePay) {
-            this.donatePay.clear();
+            return this.donatePay.update(token);
         }
 
         this.donatePay = new DonatePay(token);
@@ -153,6 +155,25 @@ class WindowControls extends Window {
     render() {
         return (
             <div className="app-controls">
+                {
+                    this.props.system.needUpdate &&
+                        <Button
+                            style={{
+                                borderRadius: 0
+                            }}
+                            disabled={this.props.system.updating}
+                            htmlType="button"
+                            type="primary"
+                            icon={!this.props.system.updating? 'arrow-up': 'loading'}
+                            onClick={updateApplication}
+                        >
+                            { !this.props.system.updating ?
+                                `Обновить до версии ${this.props.system.next}`
+                                :
+                                "Обновление..."
+                            }
+                        </Button>
+                }
                 <UserSpinResults results={ this.props.currentState.spinResults }/>
                 <Controls
                     isSpinning={ this.props.currentState.isRouletteSpinning }

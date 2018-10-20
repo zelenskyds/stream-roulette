@@ -1,78 +1,79 @@
-class DonatePay {
-    timeout = 20;
-    lastDonateId = null;
+import axios from 'axios';
+import SockJS from 'sockjs-client'
 
+class DonatePay {
     constructor(token) {
         this.token = token;
         this.init().catch( err => console.error(err) );
     }
 
     async init() {
-        const lastDonates = this.getLastNewDonates(1);
-        if(lastDonates.length === 1) {
-            this.lastDonateId = lastDonates[0].id;
-        }
-    }
-
-    async getLastNewDonates(limit=25) {
-        let result;
-        try {
-            result = await fetch(
-                `http://donatepay.ru/api/v1/transactions?access_token=${this.token}&limit=${limit}&type=donation`
-                + (this.lastDonateId? `&after=${ this.lastDonateId }`: '')
-            );
-            result = await result.json();
-        } catch (e) {}
-
-        if(result.status !== "success") {
-            return [];
-        }
-
-        return result && result.data && result.data.filter( d => d.status === "user" || d.status === "success" );
-    }
-
-    onDonate(func) {
-        this.clear();
-        this.func = func;
-        this.interval = setInterval(
-            async () => {
-                const donates = await this.getLastNewDonates();
-                if(donates.length > 0) {
-                    if(this.lastDonateId === null) {
-                        this.lastDonateId = donates[0].id;
-                        return
-                    }
-
-                    this.lastDonateId = donates[0].id;
-
-                    for(const donate of donates) {
-                        this.func({
-                            username: donate.what,
-                            amount: +donate.sum
-                        });
-                    }
-                }
-            },
-            this.timeout * 1000
-        )
-    }
-
-    update(token, timeout) {
-        if(token) {
-            this.token = token
-        } else if(timeout > 20) {
-            this.timeout = timeout;
-        } else {
+        if(!this.token) {
             return
         }
 
-        this.clear();
-        this.onDonate(this.func);
+        const { data: html } = await axios.get(
+            'http://widget.donatepay.ru/alert-box/widget/' + this.token
+        );
+
+        const match_user = html.match(/function\sgetUserId\(\)\s{\s*return\sparseInt\('([\w\d]+)'\);/);
+        const match_csrf = html.match(/function\scsrf\(\)\s{\s*return\s'([\w\d]+)';/);
+        const userId = match_user && match_user[1];
+        const csrf = match_csrf && match_csrf[1];
+
+        const { data: { time, token } } = await axios.post(
+            'http://widget.donatepay.ru/socket/token',
+            `_token=${csrf}&token=${this.token}`
+        );
+
+
+        let uid = 0;
+        this.socket = new SockJS("http://136.243.1.101:3002/connection");
+        this.socket.onopen = () => {
+            this.socket.send(JSON.stringify({
+                "method": "connect",
+                "params": {
+                    "user": userId,
+                    "info": "",
+                    "timestamp": time.toString(),
+                    "token": token
+                },
+                "uid": (++uid).toString()
+            }))
+        };
+
+        this.socket.onmessage = (e) => {
+            const result = JSON.parse(e.data);
+            if(result.method === "connect") {
+                this.socket.send(
+                    JSON.stringify([
+                        {
+                            "method": "subscribe",
+                            "params": { "channel": `notifications#${userId}` },
+                            "uid": (++uid).toString()
+                        }
+                    ])
+                )
+            } else if(result.method === "message") {
+                const donate = JSON.parse(result.body.data.notification.vars);
+
+                this.func({
+                    username: donate.name,
+                    amount: +donate.sum,
+                    message: donate.comment
+                });
+            }
+        }
     }
 
-    clear() {
-        if(this.interval) {
-            clearInterval(this.interval)
+    onDonate(func) {
+        this.func = func;
+    }
+
+    update(token) {
+        if(token) {
+            this.socket.close();
+            this.init();
         }
     }
 }

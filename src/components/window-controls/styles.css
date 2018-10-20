@@ -5,4 +5,5 @@
     color: #c9c9c9;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }

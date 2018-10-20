@@ -9,9 +9,14 @@ import createStore from './../store/store-main';
 import getConfig from './helpers/get-config';
 import initIPC from './helpers/signals';
 import initAssets from './helpers/init-assets';
+import correctConfig from './helpers/correct-config';
+import checkUpdate from './helpers/check-update';
 
 app.commandLine.appendSwitch('--autoplay-policy', 'no-user-gesture-required');
-if(process.env.DISABLE_HARDWARE_ACCELERATION === "true") {
+
+let config = getConfig(app.getPath("userData"));
+
+if(config.system && config.system.disableHardwareAcceleration) {
     app.disableHardwareAcceleration();
 }
 
@@ -19,24 +24,7 @@ const windows = {};
 let store;
 
 app.on('ready', () => {
-    const config = getConfig(app.getPath("userData"), electron.screen.getPrimaryDisplay().bounds);
-
-    config.currentState = {
-        isOpened: {
-            controls: true
-        },
-        spinResults: [],
-        isRouletteSpinning: false,
-        money: {
-            earned: 0,
-            amount: config.money.startAmountForSpin,
-            discountEarned: 0
-        },
-        donate: {},
-        state: {
-            discount: false
-        }
-    };
+    config = correctConfig(config, electron.screen.getPrimaryDisplay().bounds);
 
     initAssets(config.assets.userDataPrefix);
 
@@ -50,7 +38,8 @@ app.on('ready', () => {
         windows[widget.id] = new Widget(store, widget.id);
     }
 
-    initIPC(windows);
+    initIPC(windows, store, app);
+    checkUpdate(store);
 });
 
 app.on('window-all-closed', () => {

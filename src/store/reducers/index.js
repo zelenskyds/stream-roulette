@@ -6,6 +6,7 @@ import money from './money';
 import assets from './assets';
 import repeats from './repeats';
 import spinChances from './spin-chances';
+import system from './system';
 import tasks from './tasks';
 import tokens from './tokens';
 import windows from './windows';
@@ -17,6 +18,7 @@ export default combineReducers({
     assets,
     repeats,
     spinChances,
+    system,
     tasks,
     tokens,
     windows

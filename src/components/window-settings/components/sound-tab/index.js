@@ -22,8 +22,12 @@ class SoundTab extends Component {
         this.props.onChange(action);
     };
 
-    handleAudioChange(id) {
+    handleAudioChange({ id, volume }) {
         return ({ target }) => {
+            if(volume === target.volume) {
+                return;
+            }
+
             this.props.onChange(this.props.actions.updateSound({
                 volume: target.volume,
                 id
@@ -43,7 +47,7 @@ class SoundTab extends Component {
                                     src={ 'file://' + sound.path }
                                     controls
                                     ref={ audio => audio && (audio.volume = sound.volume) }
-                                    onVolumeChange={ this.handleAudioChange(sound.id) }
+                                    onVolumeChange={ this.handleAudioChange(sound) }
                                 />
                             </div>
                         )

@@ -1,8 +1,8 @@
 import { ipcMain } from "electron";
 import { remoteCall, remoteCallAnswer } from "./senders";
+import updateApplication from './update-application';
 
-
-export default function(windows) {
+export default function(windows, store, app) {
     ipcMain.on("open-window", (event, name) => {
         if(name in windows) {
             if(windows[name].isVisible()) {
@@ -37,5 +37,9 @@ export default function(windows) {
 
     ipcMain.on("remote-call-answer", (event, action) => {
         remoteCallAnswer(windows, action);
+    });
+
+    ipcMain.on("update-application", () => {
+        updateApplication(store, app);
     });
 }

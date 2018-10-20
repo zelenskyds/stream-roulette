@@ -96,7 +96,7 @@ class WindowSettings extends Component {
             <div className="window-settings">
                 <div className="tabs-container">
                     <Tabs
-                        defaultActiveKey="sound"
+                        defaultActiveKey="main"
                         tabPosition="left"
                     >
                         <TabPane tab="Общее" key="main">
