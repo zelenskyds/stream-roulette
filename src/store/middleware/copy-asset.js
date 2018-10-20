@@ -17,8 +17,8 @@ export default store => next => action => {
         const assetPath = path.join(prefix, "assets", action.meta.type, Date.now() + ext);
 
         fs.createReadStream(action.payload.path).pipe(fs.createWriteStream(assetPath)).on('finish', () => {
-            delete action.payload.loading;
             delete action.meta.copy;
+            action.payload.loading = false;
             action.meta.save = true;
             action.type = action.type === ADD_IMAGE? UPDATE_IMAGE: UPDATE_SOUND;
             store.dispatch(action);

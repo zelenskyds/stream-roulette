@@ -1,15 +1,13 @@
+const VERSION = "v0.4.2";
+
 export default function (config, screen) {
     if(config.windows.roulette.width >= screen.width) {
         config.windows.roulette.width = screen.width - 50;
     }
 
-    if(!config.system) {
+    if(!config.system || config.system.version !== VERSION) {
         config.system = {
-            version: "v0.4.1"
-        }
-    } else if(config.system.version !== "v0.4.1") {
-        config.system = {
-            version: "v0.4.1"
+            version: VERSION
         }
     }
 

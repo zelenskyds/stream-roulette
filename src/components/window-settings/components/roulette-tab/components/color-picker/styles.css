@@ -3,7 +3,6 @@
     width: 25px;
     height: 25px;
     flex-grow: 0;
-    z-index: 1;
     outline: none;
     box-shadow: none;
     border: none;
@@ -15,14 +14,11 @@
 .color-picker-container {
     position: absolute;
     top: calc(100% + 5px);
-    /*top: 0;*/
-    /*left: 50%;*/
-    /*right: 0;*/
-    /*transform: translate(-50%);*/
     box-shadow: 0 0 5px #000;
     border-radius: 10px;
     animation: 0.2s linear popup-enter;
     transform-origin: top;
+    z-index: 1;
 }
 
 .color-picker-container button {

@@ -1,8 +1,4 @@
 export default (userDataPrefix) => ({
-    system: {
-        version: 'v0.4.1'
-    },
-
     tokens: {
         donationAlert: "",
         donatePay: ""

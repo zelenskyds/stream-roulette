@@ -25,10 +25,23 @@ class Roulette extends Component {
             return "No variants!";
         }
 
-        const normalizedGoldChance = Math.ceil(this.props.goldChance * 100 / goldTasks.length);
-        const normalizedSilverChance = Math.ceil(this.props.silverChance * 100 / silverTasks.length);
+        const normalizedGoldChance =
+            goldTasks.length > 0?
+                Math.ceil(this.props.goldChance * 100 / goldTasks.length)
+                :
+                0;
+
+        const normalizedSilverChance =
+            silverTasks.length > 0?
+                Math.ceil(this.props.silverChance * 100 / silverTasks.length)
+                :
+                0;
+
         const normalizedBronzeChance =
-            Math.ceil(( 100 - this.props.goldChance - this.props.silverChance ) * 100 / bronzeTasks.length);
+            bronzeTasks.length > 0?
+                Math.ceil(( 100 - this.props.goldChance - this.props.silverChance ) * 100 / bronzeTasks.length)
+                :
+                0;
 
         const maxChance =
             normalizedGoldChance * goldTasks.length +
