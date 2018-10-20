@@ -83,8 +83,8 @@ class WindowControls extends Window {
 
         if( this.props.currentState.state.discount ) {
             const mod = Math.ceil((amount - earned) * this.props.discount.value) - discountEarned;
-            if( message.amount < mod ) {
-                updateDiscountEarned(discountEarned + message.amount);
+            if( +message.amount < mod ) {
+                updateDiscountEarned(discountEarned + +message.amount);
                 return;
             } else {
                 updateDiscountEarned(0);
@@ -92,8 +92,8 @@ class WindowControls extends Window {
                     discount: false
                 });
             }
-        } else if( (earned + message.amount) < amount ) {
-            updateEarned(earned + message.amount);
+        } else if( (earned + +message.amount) < amount ) {
+            updateEarned(earned + +message.amount);
             return;
         }
 
