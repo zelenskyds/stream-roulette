@@ -1,4 +1,4 @@
-const VERSION = "v0.4.2";
+const VERSION = "v0.5.0";
 
 export default function (config, screen) {
     if(config.windows.roulette.width >= screen.width) {
@@ -16,7 +16,6 @@ export default function (config, screen) {
             controls: true
         },
         spinResults: [],
-        isRouletteSpinning: false,
         money: {
             earned: 0,
             amount: config.money.startAmountForSpin,
@@ -24,7 +23,8 @@ export default function (config, screen) {
         },
         donate: {},
         state: {
-            discount: false
+            discount: false,
+            spinning: false
         }
     };
 

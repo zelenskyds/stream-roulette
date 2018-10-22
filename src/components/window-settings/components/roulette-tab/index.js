@@ -132,7 +132,7 @@ const RouletteTab = ({
                                     }
                                 } ) )
                             }
-                            color={ color }
+                            defaultColor={ color }
                         />
                     </div>
                     <div className="roulette-tab-control frame">
@@ -224,7 +224,7 @@ const RouletteTab = ({
                                             }
                                         } ) )
                                     }
-                                    color={ colorBronze }
+                                    defaultColor={ colorBronze }
                                 />
                             </div>
                             <div>
@@ -237,7 +237,7 @@ const RouletteTab = ({
                                             }
                                         } ) )
                                     }
-                                    color={ colorSilver }
+                                    defaultColor={ colorSilver }
                                 />
                             </div>
                             <div>
@@ -250,7 +250,7 @@ const RouletteTab = ({
                                             }
                                         } ) )
                                     }
-                                    color={ colorGold }
+                                    defaultColor={ colorGold }
                                 />
                             </div>
                         </div>

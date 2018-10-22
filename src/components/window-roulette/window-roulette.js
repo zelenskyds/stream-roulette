@@ -28,6 +28,19 @@ class WindowRoulette extends Window {
         });
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const size = remote.getCurrentWindow().getBounds();
+        if(
+            size.width !== this.props.windows.roulette.width ||
+            size.height !== this.props.windows.roulette.height
+        ) {
+            remote.getCurrentWindow().setSize(
+                this.props.windows.roulette.width,
+                this.props.windows.roulette.height,
+                true
+            );
+        }
+    }
 
     render() {
         const width =

@@ -13,10 +13,33 @@
 .widget-settings-layers-picker {
     background-color: transparent;
     color: #c9c9c9;
+    margin-bottom: 10px;
 }
 
 .widget-settings-title {
     /*font-size: 1.2em;*/
     font-weight: bold;
     margin: 10px 0;
+}
+
+.widget-settings-conditions{
+    margin-bottom: 5px;
+}
+
+.widget-settings-layer-info {
+    padding-bottom: 10px;
+}
+
+.widget-layer-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.widget-layer-button {
+    margin-top: 10px;
+    margin-left: 5px;
+}
+
+.widget-settings-text {
+    margin-top: 10px;
 }

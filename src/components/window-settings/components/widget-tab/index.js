@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Card, Icon } from 'antd';
 import TabContainer from "../tab-container";
 import Widget from "./components/widget";
 
@@ -20,7 +19,12 @@ class WidgetTab extends Component {
                                 width={ widget.width }
                                 height={ widget.height }
                                 key={ widget.id }
+                                id={ widget.id }
                                 layers={ widget.layers }
+
+                                actions={ this.props.actions }
+                                onChange={ this.props.onChange }
+                                onUpdate={ this.props.onUpdate }
                             />
                         )
                     )

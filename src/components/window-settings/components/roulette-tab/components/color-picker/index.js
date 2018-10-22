@@ -10,9 +10,22 @@ class ColorPicker extends Component {
 
     componentDidMount() {
         this.setState({
-            color: this.props.color
+            color: this.props.defaultColor || this.props.color
         });
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if(prevProps === this.props || this.props.color === undefined) {
+            return
+        }
+
+        if(this.props.color !== this.state.color) {
+            this.setState({
+                color: this.props.color
+            });
+        }
+    }
+
 
     close = () => {
         this.setState({
@@ -31,8 +44,7 @@ class ColorPicker extends Component {
         this.props.onChange(color.hex);
     };
 
-    handleOverlayClick = (event) => {
-        // event.preventDefault();
+    handleOverlayClick = () => {
         this.close();
     };
 
@@ -61,7 +73,7 @@ class ColorPicker extends Component {
                         >
                             <BlockPicker
                                 triangle="hide"
-                                color={this.state.color}
+                                color={ this.state.color }
                                 onChangeComplete={ this.handleChangeComplete }
                                 colors={[
                                     "#00ff00",

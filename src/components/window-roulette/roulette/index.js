@@ -14,7 +14,7 @@ class Roulette extends Component {
     lastResult = null;
 
     cardMargin = 10;
-    offsetInCards = 42;
+    offsetInCards = 202;
 
     async _spin() {
         const goldTasks = this.props.variants.filter( v => v.rarity === "gold" );
@@ -80,7 +80,7 @@ class Roulette extends Component {
 
         const offsetToSpin = offsetInPx + cardWidth * variantIndex - this.props.width / 2;
 
-        await this.scrollContainer(offsetToSpin + fakeOffset, 5);
+        await this.scrollContainer(offsetToSpin + fakeOffset, 10);
 
         await this.scrollContainer(offsetToSpin + cardWidth / 2, 0.5, 0.5, 'linear');
 
@@ -187,7 +187,7 @@ class Roulette extends Component {
                     key={ 0 }
                     width={ this.props.cardWidth }
                     height={ this.props.cardHeight }
-                    text={ "Добавте задания в настройках" }
+                    text={ "Добавьте задания в настройках" }
                     bgImage={ this.props.bronzePath }
                     bgColor={ this.props.colorBronze }
                 />,

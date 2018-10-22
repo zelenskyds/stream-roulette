@@ -4,6 +4,13 @@ import cn from 'classnames';
 import './styles.css';
 
 class YesNoCheckbox extends Component {
+
+    componentDidUpdate() {
+        if(this.props.value === undefined && this.props.onChange) {
+            this.props.onChange(null);
+        }
+    }
+
     handleClick = () => {
         if(!this.props.onChange) {
             return;

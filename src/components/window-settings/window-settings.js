@@ -6,9 +6,10 @@ import ImageTab from "./components/image-tab";
 import RouletteTab from "./components/roulette-tab";
 import TasksTab from "./components/tasks-tab";
 import deepmerge from 'deepmerge';
-import './styles.css';
 import SoundTab from "./components/sound-tab";
-// import WidgetTab from "./components/widget-tab";
+import WidgetTab from "./components/widget-tab";
+
+import './styles.css';
 
 const { TabPane } = Tabs;
 const { ipcRenderer } = window.require('electron');
@@ -160,6 +161,16 @@ class WindowSettings extends Component {
 
                                 sounds={ this.props.assets.sounds }
                                 spinSound={ this.props.windows.roulette.sound.spin }
+                            />
+                        </TabPane>
+                        <TabPane tab="Виджеты" key="widgets">
+                            <WidgetTab
+                                widgets={ this.props.windows.widgets }
+                                images={ this.props.assets.images }
+
+                                actions={ this.props.actions }
+                                onChange={ this.handleChange }
+                                onUpdate={ this.handleUpdate }
                             />
                         </TabPane>
                         <TabPane tab="Задания" key="tasks">

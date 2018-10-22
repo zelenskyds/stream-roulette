@@ -16,7 +16,7 @@
     transition-property: top;
     transition-timing-function: ease-in-out;
     transition-duration: 0.5s;
-    top: 250px;
+    top: 100%;
     box-sizing: content-box;
 }
 

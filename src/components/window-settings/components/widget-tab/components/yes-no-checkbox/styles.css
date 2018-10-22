@@ -26,7 +26,7 @@
     position: absolute;
     display: block;
     background-color: transparent;
-    left: 0;
+    left: 1px;
     right: 0;
     top: 0;
     margin: auto;

@@ -32,6 +32,16 @@ class WindowScore extends Component {
             const widget = this.props.windows.widgets.find( w => +this.id === +w.id );
             this.renderLayers(widget);
         }
+
+        const size = remote.getCurrentWindow().getBounds();
+        const widget = this.props.windows.widgets.find( w => +w.id === +this.id );
+        if( size.width !== widget.width || size.height !== widget.height) {
+            remote.getCurrentWindow().setSize(
+                widget.width,
+                widget.height,
+                true
+            );
+        }
     }
 
     renderLayers(widget) {
@@ -44,6 +54,7 @@ class WindowScore extends Component {
                 money: this.props.currentState.money,
                 discount: this.props.discount,
                 results: this.props.currentState.spinResults,
+                state: this.props.currentState.state
             });
             const show = layer.condition?
                 Object.entries(layer.condition).map(
@@ -70,9 +81,15 @@ class WindowScore extends Component {
             }
         }
 
-        this.setState({
-            layer: layers[0].component
-        });
+        if(layers.length > 0) {
+            this.setState({
+                layer: layers[0].component
+            });
+        } else {
+            this.setState({
+                layer: null
+            });
+        }
 
         if(layers.length > 1) {
             this.changeLayer(layers, 1)
@@ -81,6 +98,7 @@ class WindowScore extends Component {
 
     changeLayer = (layers, index=0) => {
         clearTimeout(this.interval);
+
         this.interval = setTimeout(
             () => {
                 this.setState({
@@ -89,7 +107,7 @@ class WindowScore extends Component {
                 index = (index + 1) % layers.length;
                 this.changeLayer(layers, index);
             },
-            layers[index].duration * 1000
+            layers.slice(index - 1)[0].duration * 1000
         );
     };
 
@@ -107,7 +125,7 @@ class WindowScore extends Component {
                 {widget.bg &&
                     <img
                         className="window-widget-bg"
-                        src={ getImageById(widget.bg) }
+                        src={ 'file://' + getImageById(widget.bg).path }
                         alt="bg"
                     />
                 }

@@ -143,8 +143,17 @@ class WindowControls extends Window {
     }
 
     spinRoulette(message, focus) {
+        this.props.updateCurrentState({
+            spinning: true
+        });
+
         return spinRoulette(message, focus).then(
-            (result) => this.props.addSpinResult({ username: message.username, text: result.text, time: new Date() })
+            (result) => {
+                this.props.addSpinResult({ username: message.username, text: result.text, time: new Date() });
+                this.props.updateCurrentState({
+                    spinning: false
+                });
+            }
         )
     }
 
@@ -176,7 +185,7 @@ class WindowControls extends Window {
                 }
                 <UserSpinResults results={ this.props.currentState.spinResults }/>
                 <Controls
-                    isSpinning={ this.props.currentState.isRouletteSpinning }
+                    isSpinning={ this.props.currentState.state.spinning }
                     isRouletteShow={ this.props.currentState.isOpened.roulette }
                     onRunClick={ () => { openWindow('roulette'); openWindow(1) } }
                     onCloseClick={ () => closeWindow('roulette') }
