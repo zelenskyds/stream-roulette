@@ -1,9 +1,37 @@
 .sound-tab-container {
     display: flex;
-    flex-direction: column;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content: flex-start;
+    align-items: flex-end;
 }
 
-.sound-tab-container audio {
-    margin-top: 5px;
+.sound-tab-container:before,
+.sound-tab-container:after {
+    display: block;
+    content: "";
+    width: 180px;
+    order: 1000;
+}
+
+.sound-tab-add-button {
+    margin-top: 29px;
+    width: 180px;
+    height: 180px;
+}
+
+.sound-tab-add-button .ant-upload.ant-upload-select.ant-upload-select-text {
+    height: 100%;
+    width: 100%;
+}
+
+.sound-tab-add-button .ant-upload.ant-upload-select.ant-upload-select-text .ant-upload .ant-btn {
+    height: 100%;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed #d9d9d9;
+    border-radius: 4px;
 }

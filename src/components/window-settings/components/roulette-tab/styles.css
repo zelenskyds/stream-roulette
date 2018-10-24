@@ -161,3 +161,23 @@ div.roulette-tab-sound {
 .roulette-tab-sound-select {
     width: 150px;
 }
+
+div.roulette-tab-section {
+    flex-direction: column;
+    /*justify-content: start;*/
+    align-items: flex-start;
+}
+
+.roulette-tab-section-header {
+    margin-top: 15px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.roulette-tab-section-line {
+    margin-bottom: 10px;
+}
+
+.roulette-tab-section-select {
+    width: 250px;
+}

@@ -13,11 +13,11 @@
 .roulette {
     overflow: hidden;
     position: relative;
-    transition-property: top;
+    transition-property: all;
     transition-timing-function: ease-in-out;
     transition-duration: 0.5s;
-    top: 100%;
     box-sizing: content-box;
+    will-change: transform, opacity;
 }
 
 .roulette .container {
@@ -25,8 +25,9 @@
     overflow: visible;
     height: 100%;
     position: relative;
-    transition-property: right;
+    transition-property: transform;
     transition-timing-function: cubic-bezier(0, 0, 0, 1);
+    will-change: transform;
 }
 
 .roulette-pointer {
@@ -59,4 +60,14 @@
 
 .roulette .frame-image {
     z-index: 1;
+}
+
+.overflow-hider {
+    background-color: transparent;
+    border-style: solid;
+    width: 100vw;
+    position: absolute;
+    height: 100vh;
+    left: 0;
+    top: 0;
 }

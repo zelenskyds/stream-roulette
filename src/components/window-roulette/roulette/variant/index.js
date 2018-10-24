@@ -1,7 +1,7 @@
 import React from 'react';
 import './styles.css';
 
-const Variant = ({ text, bgImage, bgColor, width, height }) => (
+const Variant = ({ text, bgImage, bgColor, width, height, textOffset }) => (
     <div
         className="variant"
         style={{
@@ -11,7 +11,9 @@ const Variant = ({ text, bgImage, bgColor, width, height }) => (
         }}
     >
         { bgImage && <img src={ 'file://' + bgImage.path } alt="bgRarity"/> }
-        <span>
+        <span
+            style={{ marginTop: textOffset }}
+        >
             { text }
         </span>
     </div>

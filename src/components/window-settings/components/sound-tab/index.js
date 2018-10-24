@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Upload, Button, Icon } from 'antd';
 import TabContainer from "../tab-container";
+import Sound from "./sound";
 
 import './style.css';
 
@@ -22,46 +23,54 @@ class SoundTab extends Component {
         this.props.onChange(action);
     };
 
-    handleAudioChange({ id, volume }) {
-        return ({ target }) => {
-            if(volume === target.volume) {
-                return;
-            }
-
+    handleAudioChange({ id }) {
+        return (volume) => {
             this.props.onChange(this.props.actions.updateSound({
-                volume: target.volume,
+                volume,
                 id
             }));
         };
     };
 
+    handleAudioRemove(id) {
+        return () => {
+            this.props.onChange(this.props.actions.removeSound({
+                id
+            }));
+        }
+    }
+
     render() {
         return (
             <TabContainer>
-                {
-                    this.props.sounds.map(
-                        sound => (
-                            <div key={ sound.id } className="sound-tab-container">
-                                { sound.name }
-                                <audio
-                                    src={ 'file://' + sound.path }
+                <div className="sound-tab-container">
+                    {
+                        this.props.sounds.map(
+                            sound => (
+                                <Sound
+                                    loading={ sound.loading }
+                                    key={ sound.id }
+                                    onRemove={ this.handleAudioRemove(sound.id) }
                                     controls
-                                    ref={ audio => audio && (audio.volume = sound.volume) }
+                                    name={ sound.name }
+                                    src={ sound.path }
+                                    volume={ sound.volume }
                                     onVolumeChange={ this.handleAudioChange(sound) }
                                 />
-                            </div>
+                            )
                         )
-                    )
-                }
-                <Upload
-                    accept="audio/*"
-                    fileList={ [] }
-                    onChange={ this.handleAudioAdd }
-                    beforeUpload={()=>false}>
-                    <Button>
-                        <Icon type="plus" /> Добавить аудиофайл
-                    </Button>
-                </Upload>
+                    }
+                    <Upload
+                        className="sound-tab-add-button"
+                        accept="audio/*"
+                        fileList={ [] }
+                        onChange={ this.handleAudioAdd }
+                        beforeUpload={()=>false}>
+                        <Button htmlType="button">
+                            <Icon type="plus" /> Добавить аудиофайл
+                        </Button>
+                    </Upload>
+                </div>
             </TabContainer>
         );
     }

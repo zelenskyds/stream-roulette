@@ -97,7 +97,7 @@ class WindowSettings extends Component {
             <div className="window-settings">
                 <div className="tabs-container">
                     <Tabs
-                        defaultActiveKey="main"
+                        defaultActiveKey="sound"
                         tabPosition="left"
                     >
                         <TabPane tab="Общее" key="main">
@@ -161,6 +161,11 @@ class WindowSettings extends Component {
 
                                 sounds={ this.props.assets.sounds }
                                 spinSound={ this.props.windows.roulette.sound.spin }
+                                appearanceSound={ this.props.windows.roulette.sound.appearance }
+                                rouletteAppearance={ this.props.windows.roulette.appearance || {} }
+                                rouletteSpin={ this.props.windows.roulette.spinning || {} }
+
+                                textOffset={ this.props.windows.roulette.textOffset }
                             />
                         </TabPane>
                         <TabPane tab="Виджеты" key="widgets">

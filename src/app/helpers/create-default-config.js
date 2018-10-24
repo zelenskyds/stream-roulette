@@ -36,6 +36,15 @@ export default (userDataPrefix) => ({
 
     windows: {
         roulette: {
+            appearance: {
+                animation: "slide-down",
+                duration: 0.5,
+                delay: 5
+            },
+            spinning: {
+                duration: 10,
+                cards: 200
+            },
             width: 930,
             height: 250,
 
@@ -46,6 +55,8 @@ export default (userDataPrefix) => ({
 
             cardWidth: 160,
             cardHeight: 160,
+
+            textOffset: 0,
 
             color: "#00ff00",
             colorBronze: "#cd5832",
@@ -62,6 +73,7 @@ export default (userDataPrefix) => ({
 
             sound: {
                 spin: null,
+                appearance: null,
                 discount: null,
                 gold: null,
                 silver: null,

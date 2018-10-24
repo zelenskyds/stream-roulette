@@ -2,9 +2,9 @@ import {
     ADD_LAYER,
     DOWN_LAYER,
     REMOVE_LAYER, UP_LAYER,
-    UPDATE_LAYER,
+    UPDATE_LAYER, UPDATE_ROULETTE_APPEARANCE,
     UPDATE_ROULETTE_IMAGES,
-    UPDATE_ROULETTE_SOUNDS,
+    UPDATE_ROULETTE_SOUNDS, UPDATE_ROULETTE_SPIN,
     UPDATE_WIDGET,
     UPDATE_WINDOWS
 } from "../constants";
@@ -46,16 +46,6 @@ export default function(state={}, { type, payload, meta }) {
             };
 
         case UPDATE_ROULETTE_SOUNDS:
-            console.log( {
-                ...state,
-                roulette: {
-                    ...state.roulette,
-                    sound: {
-                        ...state.roulette.sound,
-                        ...payload
-                    }
-                }
-            } );
             return {
                 ...state,
                 roulette: {
@@ -171,6 +161,30 @@ export default function(state={}, { type, payload, meta }) {
             state.widgets = updateElement(state.widgets, widget);
 
             return state;
+
+        case UPDATE_ROULETTE_APPEARANCE:
+            return {
+                ...state,
+                roulette: {
+                    ...state.roulette,
+                    appearance: {
+                        ...state.roulette.appearance,
+                        ...payload
+                    }
+                }
+            };
+
+        case UPDATE_ROULETTE_SPIN:
+            return {
+                ...state,
+                roulette: {
+                    ...state.roulette,
+                    spinning: {
+                        ...state.roulette.spin,
+                        ...payload
+                    }
+                }
+            };
 
         default:
             return state

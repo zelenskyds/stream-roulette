@@ -4,6 +4,27 @@ import random from '../../../services/random';
 import render from '../../../services/render-dot';
 import './styles.css';
 
+function sleep(duration) {
+    let resolve;
+    const promise = new Promise( (r) => resolve = r );
+    setTimeout(
+        resolve,
+        duration * 1000
+    );
+    return promise;
+}
+
+function play(sound) {
+    sound && sound.play()
+}
+
+function stop(sound) {
+    if(sound) {
+        sound.pause();
+        sound.currentTime = 0;
+    }
+}
+
 class Roulette extends Component {
     state = {
         showing: false,
@@ -13,8 +34,9 @@ class Roulette extends Component {
 
     lastResult = null;
 
+    startCardOffset = 2;
     cardMargin = 10;
-    offsetInCards = 202;
+    offsetInCards = 0;
 
     async _spin() {
         const goldTasks = this.props.variants.filter( v => v.rarity === "gold" );
@@ -80,7 +102,9 @@ class Roulette extends Component {
 
         const offsetToSpin = offsetInPx + cardWidth * variantIndex - this.props.width / 2;
 
-        await this.scrollContainer(offsetToSpin + fakeOffset, 10);
+        play(this.refs.spinSound);
+        await this.scrollContainer(offsetToSpin + fakeOffset, this.props.spinning.duration);
+        stop(this.refs.spinSound);
 
         await this.scrollContainer(offsetToSpin + cardWidth / 2, 0.5, 0.5, 'linear');
 
@@ -93,17 +117,16 @@ class Roulette extends Component {
             donate: message
         });
 
-        this.refs.audio && this.refs.audio.play();
+        await this.toggleRoulette(
+            this.props.appearance.duration
+        );
 
-        await this.toggleRoulette();
         const variant = await this._spin();
 
-        if(this.refs.audio) {
-            this.refs.audio.pause();
-            this.refs.audio.currentTime = 0;
-        }
-
-        await this.toggleRoulette(5);
+        await this.toggleRoulette(
+            this.props.appearance.duration,
+            this.props.appearance.delay || 5
+        );
 
         await this.setState({
             scroll: this.state.startScroll
@@ -128,7 +151,7 @@ class Roulette extends Component {
         this._containerTransitionPromise = new Promise( (resolve) => this._resolveContainerTransition = resolve );
     }
 
-    async scrollContainer(offset, duration=7, delay=0, func='cubic-bezier(0, 0, 0, 1)') {
+    async scrollContainer(offset, duration=10, delay=0, func='cubic-bezier(0, 0, 0, 1)') {
         this.createContainerTransitionPromise();
 
         await this.setState({
@@ -145,13 +168,55 @@ class Roulette extends Component {
         });
     }
 
-    async toggleRoulette(delay=0) {
+    getAppearanceStyles() {
+        switch(this.props.appearance.animation) {
+            case 'scale-x':
+                return {
+                    transform: this.state.showing? 'scaleX(1)': 'scaleX(0)'
+                };
+            case 'scale-y':
+                return {
+                    transform: this.state.showing? 'scaleY(1)': 'scaleY(0)'
+                };
+            case 'scale-xy':
+                return {
+                    transform: this.state.showing? 'scale(1)': 'scale(0)'
+                };
+            case 'opacity':
+                return {
+                    opacity: this.state.showing? 1: 0
+                };
+            case 'slide-up':
+                return {
+                    transform: this.state.showing? 'translateY(0)': 'translateY(-100%)'
+                };
+            case 'slide-down':
+            default:
+                return {
+                    transform: this.state.showing? 'translateY(0)': 'translateY(100%)'
+                }
+        }
+    }
+
+    async toggleRoulette(duration=0.5, delay=0) {
         this.createRouletteTransitionPromise();
+        if(delay) {
+            await sleep(delay);
+        }
+        play(this.refs.appearanceSound);
         await this.setState({
             showing: !this.state.showing,
-            toggleDelay: delay
+            // toggleDelay: delay,
+            toggleDuration: duration
         });
         await this._rouletteTransitionPromise;
+        stop(this.refs.appearanceSound);
+
+        if(delay !== 0) {
+            await this.setState({
+                toggleDelay: 0
+            });
+        }
     }
 
     onRouletteMoved = () => {
@@ -170,8 +235,13 @@ class Roulette extends Component {
         this.refs.container.addEventListener('transitionend', this.onContainerScrolled);
 
         this.props.getSpin && this.props.getSpin( this.spin );
+
         if(this.props.spinSound) {
-            this.refs.audio.volume = this.props.spinSound.volume;
+            this.refs.spinSound.volume = this.props.spinSound.volume;
+        }
+
+        if(this.props.appearanceSound) {
+            this.refs.appearanceSound.volume = this.props.appearanceSound.volume;
         }
     }
 
@@ -185,6 +255,7 @@ class Roulette extends Component {
             return [
                 <Variant
                     key={ 0 }
+                    textOffset={ this.props.textOffset }
                     width={ this.props.cardWidth }
                     height={ this.props.cardHeight }
                     text={ "Добавьте задания в настройках" }
@@ -194,17 +265,18 @@ class Roulette extends Component {
             ]
         }
 
-        let preVariants = [...this.props.variants.slice(this.props.variants.length - 2)];
-        while(preVariants.length < this.offsetInCards) {
+        let preVariants = [...this.props.variants.slice(this.props.variants.length - this.startCardOffset)];
+        while(preVariants.length < (this.props.spinning.cards || 200)) {
             preVariants = [ ...preVariants, ...this.props.variants ]
         }
 
-        preVariants = preVariants.slice(0, this.offsetInCards);
+        this.offsetInCards = preVariants.length;
 
-        const variants = [...preVariants, ...this.props.variants, ...this.props.variants.slice(0, 2)];
+        const variants = [...preVariants, ...this.props.variants, ...this.props.variants.slice(0, this.startCardOffset)];
         return variants.map(
             (variant, index) => (
                 <Variant
+                    textOffset={ this.props.textOffset }
                     width={ this.props.cardWidth }
                     height={ this.props.cardHeight }
                     key={ index }
@@ -232,16 +304,22 @@ class Roulette extends Component {
         }
 
         if(this.props.spinSound) {
-            if(this.refs.audio.volume !== this.props.spinSound.volume) {
-                this.refs.audio.volume = this.props.spinSound.volume;
+            if(this.refs.spinSound.volume !== this.props.spinSound.volume) {
+                this.refs.spinSound.volume = this.props.spinSound.volume;
+            }
+        }
+
+        if(this.props.appearanceSound) {
+            if(this.refs.appearanceSound.volume !== this.props.appearanceSound.volume) {
+                this.refs.appearanceSound.volume = this.props.appearanceSound.volume;
             }
         }
     }
 
     onResize = () => {
-        const twoCardWidth = (this.props.cardWidth + this.cardMargin*2) * 2;
+        const startCardOffsetInPx = (this.props.cardWidth + this.cardMargin*2) * this.startCardOffset;
         const offsetForFirstCard = (this.props.width - this.props.cardWidth - this.cardMargin*2) / 2;
-        const startScroll = twoCardWidth - offsetForFirstCard;
+        const startScroll = startCardOffsetInPx - offsetForFirstCard;
 
         this.setState({
             scroll: startScroll,
@@ -262,8 +340,15 @@ class Roulette extends Component {
                 {this.props.spinSound &&
                     <audio
                         loop
-                        ref="audio"
+                        ref="spinSound"
                         src={ 'file://' + this.props.spinSound.path }
+                    />
+                }
+                {this.props.appearanceSound &&
+                    <audio
+                        loop
+                        ref="appearanceSound"
+                        src={ 'file://' + this.props.appearanceSound.path }
                     />
                 }
                 <div
@@ -272,11 +357,12 @@ class Roulette extends Component {
                         width: this.props.width,
                         height: this.props.height,
                         transitionDelay: this.state.toggleDelay + 's',
-                        top: this.state.showing? 0: undefined,
+                        transitionDuration: (this.state.toggleDuration || 0.5) + 's',
                         paddingTop: this.props.paddingTop,
                         paddingRight: this.props.paddingRight,
                         paddingBottom: this.props.paddingBottom,
                         paddingLeft: this.props.paddingLeft,
+                        ...this.getAppearanceStyles()
                     }}
                     className="roulette"
                 >
@@ -294,12 +380,24 @@ class Roulette extends Component {
                             transitionDuration: this.state.duration + 's',
                             transitionTimingFunction: this.state.func,
                             transitionDelay: this.state.delay + 's',
-                            right: this.state.scroll,
+                            // right: this.state.scroll,
+                            transform: `translateX(${-this.state.scroll}px)`,
                             paddingTop: (this.props.height - this.props.cardHeight) / 2
                         }}
                     >
                         { this.renderVariants() }
                     </div>
+                    <div
+                        className="overflow-hider"
+                        style={{
+                            borderStyle: 'solid',
+                            borderColor: this.props.color,
+                            borderTopWidth: this.props.paddingTop,
+                            borderRightWidth: this.props.paddingRight,
+                            borderBottomWidth: this.props.paddingBottom,
+                            borderLeftWidth: this.props.paddingLeft,
+                        }}
+                    />
                     <div
                         className="roulette-pointer"
                         style={{

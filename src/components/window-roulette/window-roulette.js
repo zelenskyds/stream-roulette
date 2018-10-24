@@ -29,12 +29,12 @@ class WindowRoulette extends Window {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const size = remote.getCurrentWindow().getBounds();
+        const size = remote.getCurrentWindow().getContentBounds();
         if(
             size.width !== this.props.windows.roulette.width ||
             size.height !== this.props.windows.roulette.height
         ) {
-            remote.getCurrentWindow().setSize(
+            remote.getCurrentWindow().setContentSize(
                 this.props.windows.roulette.width,
                 this.props.windows.roulette.height,
                 true
@@ -76,6 +76,7 @@ class WindowRoulette extends Window {
                     goldChance={ this.props.spinChances.gold }
                     allowRepeat={ this.props.repeats.allow }
                     spinSound={ getSoundById(this.props.windows.roulette.sound.spin) }
+                    appearanceSound={ getSoundById(this.props.windows.roulette.sound.appearance) }
                     bgImage={ getImageById(this.props.windows.roulette.images.bg) }
                     frameImage={ getImageById(this.props.windows.roulette.images.frame) }
                     goldImage={ getImageById(this.props.windows.roulette.images.gold) }
@@ -83,6 +84,10 @@ class WindowRoulette extends Window {
                     bronzeImage={ getImageById(this.props.windows.roulette.images.bronze) }
 
                     currentState={ this.props.currentState }
+                    appearance={ this.props.windows.roulette.appearance || {} }
+                    spinning={ this.props.windows.roulette.spinning || {} }
+
+                    textOffset={ this.props.windows.roulette.textOffset }
                 />
             </div>
         );

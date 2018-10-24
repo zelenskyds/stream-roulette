@@ -33,10 +33,10 @@ class WindowScore extends Component {
             this.renderLayers(widget);
         }
 
-        const size = remote.getCurrentWindow().getBounds();
+        const size = remote.getCurrentWindow().getContentBounds();
         const widget = this.props.windows.widgets.find( w => +w.id === +this.id );
         if( size.width !== widget.width || size.height !== widget.height) {
-            remote.getCurrentWindow().setSize(
+            remote.getCurrentWindow().setContentSize(
                 widget.width,
                 widget.height,
                 true
