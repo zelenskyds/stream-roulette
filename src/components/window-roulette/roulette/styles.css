@@ -34,8 +34,7 @@
     position: absolute;
     height: 100%;
     top: 0;
-    width: 4px;
-    background-color: red;
+    border: 2px solid red;
 }
 
 .roulette-offset {
@@ -64,10 +63,9 @@
 
 .overflow-hider {
     background-color: transparent;
-    border-style: solid;
+    border: 0 solid;
     width: 100vw;
     position: absolute;
-    height: 100vh;
     left: 0;
     top: 0;
 }

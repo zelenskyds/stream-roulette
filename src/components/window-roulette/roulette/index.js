@@ -380,7 +380,6 @@ class Roulette extends Component {
                             transitionDuration: this.state.duration + 's',
                             transitionTimingFunction: this.state.func,
                             transitionDelay: this.state.delay + 's',
-                            // right: this.state.scroll,
                             transform: `translateX(${-this.state.scroll}px)`,
                             paddingTop: (this.props.height - this.props.cardHeight) / 2
                         }}
@@ -390,12 +389,12 @@ class Roulette extends Component {
                     <div
                         className="overflow-hider"
                         style={{
-                            borderStyle: 'solid',
                             borderColor: this.props.color,
-                            borderTopWidth: this.props.paddingTop,
+                            marginTop: this.props.paddingTop,
                             borderRightWidth: this.props.paddingRight,
-                            borderBottomWidth: this.props.paddingBottom,
+                            marginBottom: this.props.paddingBottom,
                             borderLeftWidth: this.props.paddingLeft,
+                            height: `calc(100vh - ${this.props.paddingTop + this.props.paddingBottom}px)`
                         }}
                     />
                     <div
