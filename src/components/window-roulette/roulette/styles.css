@@ -61,11 +61,39 @@
     z-index: 1;
 }
 
-.overflow-hider {
-    background-color: transparent;
-    border: 0 solid;
-    width: 100vw;
+.overflow-hider-left,
+.overflow-hider-right {
+    border: 0 solid transparent;
     position: absolute;
+    overflow: hidden;
+}
+
+.overflow-hider-left {
     left: 0;
+}
+
+.overflow-hider-right {
+    right: 0;
+}
+
+.overflow-hider-left img,
+.overflow-hider-right img {
     top: 0;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    object-fit: fill;
+}
+
+.overflow-hider-left img {
+    left: 0;
+}
+
+.overflow-hider-right img {
+    right: 0;
+}
+
+.overflow-hider-left div,
+.overflow-hider-right div {
+    border: 100vw solid;
 }

@@ -387,16 +387,54 @@ class Roulette extends Component {
                         { this.renderVariants() }
                     </div>
                     <div
-                        className="overflow-hider"
+                        className="overflow-hider-left"
                         style={{
-                            borderColor: this.props.color,
-                            marginTop: this.props.paddingTop,
-                            borderRightWidth: this.props.paddingRight,
-                            marginBottom: this.props.paddingBottom,
-                            borderLeftWidth: this.props.paddingLeft,
+                            top: this.props.paddingTop,
+                            width: this.props.paddingLeft,
                             height: `calc(100vh - ${this.props.paddingTop + this.props.paddingBottom}px)`
                         }}
-                    />
+                    >
+                        {this.props.bgImage?
+                            <img
+                                src={'file://' + this.props.bgImage.path}
+                                alt="overflow-hider-bg"
+                                style={{
+                                    top: -this.props.paddingTop,
+                                }}
+                            />
+                            :
+                            <div
+                                style={{
+                                    borderColor: this.props.color,
+                                }}
+                            />
+                        }
+                    </div>
+                    <div
+                        className="overflow-hider-right"
+                        style={{
+                            backgroundColor: this.props.color,
+                            top: this.props.paddingTop,
+                            width: this.props.paddingRight,
+                            height: `calc(100vh - ${this.props.paddingTop + this.props.paddingBottom}px)`
+                        }}
+                    >
+                        {this.props.bgImage?
+                            <img
+                                src={'file://' + this.props.bgImage.path}
+                                alt="overflow-hider-bg"
+                                style={{
+                                    top: -this.props.paddingTop,
+                                }}
+                            />
+                            :
+                            <div
+                                style={{
+                                    borderColor: this.props.color,
+                                }}
+                            />
+                        }
+                    </div>
                     <div
                         className="roulette-pointer"
                         style={{
